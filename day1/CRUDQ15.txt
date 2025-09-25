@@ -1,0 +1,1 @@
+ update employee set basic = basic+basic*5/100 where basic<20000;

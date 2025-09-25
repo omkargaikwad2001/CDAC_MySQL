@@ -1,0 +1,3 @@
+insert into Customer values(5,'Geeta','Pimpri');
+insert into Customer values(6,'Raj','Aundh');
+insert into Customer values(7,'Yash','Aundh');

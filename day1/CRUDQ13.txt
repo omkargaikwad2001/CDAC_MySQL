@@ -1,0 +1,9 @@
+create table employee(eno int,ename varchar(15),basic float,incentive float);
+
+insert into employee values(1,'Rajesh',20000,1500);
+insert into employee values(2,'Sarita',25000,1000);
+insert into employee values(3,'Meera',15000,3000);
+insert into employee values(4,'Jitesh',30000,500);
+insert into employee values(5,'Ramesh',12000,3000);
+
+select * from employee where basic>15000;

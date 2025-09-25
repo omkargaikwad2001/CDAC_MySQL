@@ -1,0 +1,1 @@
+update employee set incentive = 1000 where ename = 'Jitesh';

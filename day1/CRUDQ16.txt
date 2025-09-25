@@ -1,0 +1,1 @@
+insert into employee (eno,ename,basic) values(20,'Ajay',16000);

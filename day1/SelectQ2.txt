@@ -1,0 +1,22 @@
+create table customer1 as select * from customer;
+mysql> select * from customer1;
++--------+--------+----------+
+| custid | cname  | location |
++--------+--------+----------+
+|      2 | Ganesh | Pune     |
+|      3 | Kishor | Kothrud  |
+|      5 | Geeta  | Pimpri   |
+|      6 | Raj    | Aundh    |
+|      7 | Yash   | Aundh    |
++--------+--------+----------+
+
+create table salesman1 as select * from salesman;
+mysql> select * from salesman1;
++------+----------+--------+------------+
+| sid  | sname    | city   | experience |
++------+----------+--------+------------+
+|   10 | Rajesh   | Mumbai |          5 |
+|   11 | Seema    | Pune   |          8 |
+|   12 | Shailesh | Nagpur |          7 |
+|   13 | Rakhi    | Pune   |          2 |
++------+----------+--------+------------+
