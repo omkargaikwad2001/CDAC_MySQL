@@ -1,2 +1,0 @@
-select * from Vehicle; 
-select * from Vehicle where vname = 'Royal Enfild';

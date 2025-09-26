@@ -1,1 +1,0 @@
-select empno,ename,deptno from emp where mgr = 7698;

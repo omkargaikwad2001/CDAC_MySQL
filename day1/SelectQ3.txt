@@ -1,2 +1,0 @@
-mysql> select * from Emp where sal>2000 and comm>200;
-Empty set (0.00 sec)

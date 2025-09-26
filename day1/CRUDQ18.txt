@@ -1,1 +1,0 @@
- update employee set basic = 60000 where eno = 5;

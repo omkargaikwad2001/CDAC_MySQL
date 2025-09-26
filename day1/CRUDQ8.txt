@@ -1,1 +1,0 @@
-update veheicle set price = 80000 where price = 75000; 

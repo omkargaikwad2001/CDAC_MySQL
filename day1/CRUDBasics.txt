@@ -1,0 +1,395 @@
+Q1. Insert below records.
+
+create database knowit;
+
+show databases;
+
+use knowit;
+
+create table vehicle (vid int,vname varchar(15),price float,discount float,milage float,details varchar(25));
+
+mysql> show tables;
++------------------+
+| Tables_in_knowit |
++------------------+
+| vehicle          |
++------------------+
+
+insert into vehicle values(1,'Activa',80000,10,35,'Two wheeler');
+insert into vehicle values(2,'Santro',95000,20,20,'Product of Hyandai');
+insert into vehicle values(3,'Yamaha',160000,5,70,'Sturdy and good milage');
+insert into vehicle values(4,'i-10',300000,8,18,'Good small car');
+insert into vehicle values(5,'WaganR',250000,10,25,'Good milage car');
+insert into vehicle values(6,'Hero Splendor',75000,9,65,'Best bike');
+insert into vehicle values(7,'Royal Enfild',190000,5,40,'a royal bike');
+
+mysql> select * from vehicle;
++------+---------------+--------+----------+--------+------------------------+
+| vid  | vname         | price  | discount | milage | details                |
++------+---------------+--------+----------+--------+------------------------+
+|    1 | Activa        |  80000 |       10 |     35 | Two wheeler            |
+|    2 | Santro        |  95000 |       20 |     20 | Product of Hyandai     |
+|    3 | Yamaha        | 160000 |        5 |     70 | Sturdy and good milage |
+|    4 | i-10          | 300000 |        8 |     18 | Good small car         |
+|    5 | WaganR        | 250000 |       10 |     25 | Good milage car        |
+|    6 | Hero Splendor |  75000 |        9 |     65 | Best bike              |
+|    7 | Royal Enfild  | 190000 |        5 |     40 | a royal bike           |
++------+---------------+--------+----------+--------+------------------------+
+
+create table customer(custid int,cname varchar(15),location varchar(15));
+
+mysql> show tables;
++------------------+
+| Tables_in_knowit |
++------------------+
+| customer         |
+| vehicle          |
++------------------+
+
+insert into customer values(1,'Nilima','Pimpri');
+insert into customer values(2,'Ganesh','Pune');
+insert into customer values(3,'Kishor','Kothrud');
+insert into customer values(4,'Priya','Aundh');
+
+mysql> select * from customer;
++--------+--------+----------+
+| custid | cname  | location |
++--------+--------+----------+
+|      1 | Nilima | Pimpri   |
+|      2 | Ganesh | Pune     |
+|      3 | Kishor | Kothrud  |
+|      4 | Priya  | Aundh    |
++--------+--------+----------+
+
+create table salesman(sid int,sname varchar(15),city varchar(15),experience float);
+
+mysql> show tables;
++------------------+
+| Tables_in_knowit |
++------------------+
+| customer         |
+| salesman         |
+| vehicle          |
++------------------+
+
+insert into salesman values(10,'Rajesh','Mumbai',5);
+insert into salesman values(11,'Seema','Pune',8);
+insert into salesman values(12,'Shailesh','Nagpur',7);
+insert into salesman values(13,'Rakhi','Pune',2);
+
+mysql> select * from salesman;
++------+----------+--------+------------+
+| sid  | sname    | city   | experience |
++------+----------+--------+------------+
+|   10 | Rajesh   | Mumbai |          5 |
+|   11 | Seema    | Pune   |          8 |
+|   12 | Shailesh | Nagpur |          7 |
+|   13 | Rakhi    | Pune   |          2 |
++------+----------+--------+------------+
+
+============================================================================================
+
+Q2. Display names of salesmen who work in pune.
+
+mysql> select sname from salesmen where city = 'pune';
++-------+
+| sname |
++-------+
+| Seema |
+| Rakhi |
++-------+
+
+============================================================================================
+
+Q3. Delete customer from Pimpri area.
+	
+mysql> delete from customer where location = 'pimpri';
+Query OK, 1 row affected (0.10 sec)
+
+mysql> select * from customer;
++--------+--------+----------+
+| custid | cname  | location |
++--------+--------+----------+
+|      2 | Ganesh | Pune     |
+|      3 | Kishor | Kothrud  |
+|      4 | Priya  | Aundh    |
++--------+--------+----------+
+
+============================================================================================
+
+Q4. Add new customers
+
+insert into customer values(5,'Geeta','Pimpri');
+insert into customer values(6,'Raj','Aundh');
+insert into customer values(7,'Yash','Aundh');
+
+mysql> select * from customer;
++--------+--------+----------+
+| custid | cname  | location |
++--------+--------+----------+
+|      2 | Ganesh | Pune     |
+|      3 | Kishor | Kothrud  |
+|      4 | Priya  | Aundh    |
+|      5 | Geeta  | Pimpri   |
+|      6 | Raj    | Aundh    |
+|      7 | Yash   | Aundh    |
++--------+--------+----------+ 
+
+============================================================================================
+
+Q5. Delete customer from area Aundh whose name is Priya.
+
+mysql> delete from customer where location = 'aundh' and cname = 'priya';
+Query OK, 1 row affected (0.09 sec)
+
+mysql> select * from customer;
++--------+--------+----------+
+| custid | cname  | location |
++--------+--------+----------+
+|      2 | Ganesh | Pune     |
+|      3 | Kishor | Kothrud  |
+|      5 | Geeta  | Pimpri   |
+|      6 | Raj    | Aundh    |
+|      7 | Yash   | Aundh    |
++--------+--------+----------+
+
+============================================================================================
+
+Q6. Display information of vehicle, Royal Enfild.
+
+mysql> select * from vehicle where vname = 'royal enfild';
++------+--------------+--------+----------+--------+--------------+
+| vid  | vname        | price  | discount | milage | details      |
++------+--------------+--------+----------+--------+--------------+
+|    7 | Royal Enfild | 190000 |        5 |     40 | a royal bike |
++------+--------------+--------+----------+--------+--------------+
+
+============================================================================================
+
+Q7. Display information of all bikes.
+
+mysql> select * from vehicle where vname in('activa','Yamaha','hero splendor','royal enfild');
++------+---------------+--------+----------+--------+------------------------+
+| vid  | vname         | price  | discount | milage | details                |
++------+---------------+--------+----------+--------+------------------------+
+|    1 | Activa        |  80000 |       10 |     35 | Two wheeler            |
+|    3 | Yamaha        | 160000 |        5 |     70 | Sturdy and good milage |
+|    6 | Hero Splendor |  75000 |        9 |     65 | Best bike              |
+|    7 | Royal Enfild  | 190000 |        5 |     40 | a royal bike           |
++------+---------------+--------+----------+--------+------------------------+
+
+============================================================================================
+
+Q8. If buying price of the vehicle is 75000 then change it to 80000.
+
+mysql> update vehicle set price = 80000 where price = 75000;
+
+mysql> select * from vehicle;
++------+---------------+--------+----------+--------+------------------------+
+| vid  | vname         | price  | discount | milage | details                |
++------+---------------+--------+----------+--------+------------------------+
+|    1 | Activa        |  80000 |       10 |     35 | Two wheeler            |
+|    2 | Santro        |  95000 |       20 |     20 | Product of Hyandai     |
+|    3 | Yamaha        | 160000 |        5 |     70 | Sturdy and good milage |
+|    4 | i-10          | 300000 |        8 |     18 | Good small car         |
+|    5 | WaganR        | 250000 |       10 |     25 | Good milage car        |
+|    6 | Hero Splendor |  80000 |        9 |     65 | Best bike              |
+|    7 | Royal Enfild  | 190000 |        5 |     40 | a royal bike           |
++------+---------------+--------+----------+--------+------------------------+
+
+============================================================================================
+
+Q9. Display information of vehicle i-10.
+
+mysql> select * from vehicle where vname = 'i-10';
++------+-------+--------+----------+--------+----------------+
+| vid  | vname | price  | discount | milage | details        |
++------+-------+--------+----------+--------+----------------+
+|    4 | i-10  | 300000 |        8 |     18 | Good small car |
++------+-------+--------+----------+--------+----------------+
+
+============================================================================================
+
+Q10. Display vid,vname,price,details and total price for each vehicle.
+
+mysql> select vid,vname,price,details,(price-price*discount/100) 'Total' from vehicle;
++------+---------------+--------+------------------------+--------+
+| vid  | vname         | price  | details                | Total  |
++------+---------------+--------+------------------------+--------+
+|    1 | Activa        |  80000 | Two wheeler            |  72000 |
+|    2 | Santro        |  95000 | Product of Hyandai     |  76000 |
+|    3 | Yamaha        | 160000 | Sturdy and good milage | 152000 |
+|    4 | i-10          | 300000 | Good small car         | 276000 |
+|    5 | WaganR        | 250000 | Good milage car        | 225000 |
+|    6 | Hero Splendor |  80000 | Best bike              |  72800 |
+|    7 | Royal Enfild  | 190000 | a royal bike           | 180500 |
++------+---------------+--------+------------------------+--------+
+
+============================================================================================
+
+Q11. Display all vehicle whose price is less than 100000.
+
+mysql> select * from vehicle where price<100000;
++------+---------------+-------+----------+--------+--------------------+
+| vid  | vname         | price | discount | milage | details            |
++------+---------------+-------+----------+--------+--------------------+
+|    1 | Activa        | 80000 |       10 |     35 | Two wheeler        |
+|    2 | Santro        | 95000 |       20 |     20 | Product of Hyandai |
+|    6 | Hero Splendor | 80000 |        9 |     65 | Best bike          |
++------+---------------+-------+----------+--------+--------------------+
+
+============================================================================================
+
+Q12. Display all the information of salesmen having experience more than 5 years.
+
+mysql> select * from salesmen where experience>5;
++------+----------+--------+------------+
+| sid  | sname    | city   | experience |
++------+----------+--------+------------+
+|   11 | Seema    | Pune   |          8 |
+|   12 | Shailesh | Nagpur |          7 |
++------+----------+--------+------------+
+
+============================================================================================
+
+Q13. Insert below records.
+
+mysql> create table employee(eno int,ename varchar(15),basic float,incentive float);
+
+mysql> show tables;
++------------------+
+| Tables_in_knowit |
++------------------+
+| customer         |
+| employee         |
+| salesmen         |
+| vehicle          |
++------------------+
+
+insert into employee values(1,'Rajesh',20000,1500);
+insert into employee values(2,'Sarita',25000,1000);
+insert into employee values(3,'Meera',15000,3000);
+insert into employee values(4,'Jitesh',30000,500);
+insert into employee values(5,'Ramesh',12000,3000);
+
+mysql> select * from employee;
++------+--------+-------+-----------+
+| eno  | ename  | basic | incentive |
++------+--------+-------+-----------+
+|    1 | Rajesh | 20000 |      1500 |
+|    2 | Sarita | 25000 |      1000 |
+|    3 | Meera  | 15000 |      3000 |
+|    4 | Jitesh | 30000 |       500 |
+|    5 | Ramesh | 12000 |      3000 |
++------+--------+-------+-----------+
+
+mysql> select * from employee where basic>15000;
+
+============================================================================================
+
+Q14. Change incentive of Jitesh to 1000.
+
+mysql> update employee set incentive = 1000 where eno = 4;
+Query OK, 1 row affected (0.08 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+mysql> select * from employee;
++------+--------+-------+-----------+
+| eno  | ename  | basic | incentive |
++------+--------+-------+-----------+
+|    1 | Rajesh | 20000 |      1500 |
+|    2 | Sarita | 25000 |      1000 |
+|    3 | Meera  | 15000 |      3000 |
+|    4 | Jitesh | 30000 |      1000 |
+|    5 | Ramesh | 12000 |      3000 |
++------+--------+-------+-----------+ 
+
+============================================================================================
+
+Q15. Increase the salary of all employees earning less than 20000 basic by 5%.
+
+mysql> update employee set basic = basic + basic*5/100 where basic<20000;
+Query OK, 2 rows affected (0.10 sec)
+Rows matched: 2  Changed: 2  Warnings: 0
+
+mysql> select * from employee;
++------+--------+-------+-----------+
+| eno  | ename  | basic | incentive |
++------+--------+-------+-----------+
+|    1 | Rajesh | 20000 |      1500 |
+|    2 | Sarita | 25000 |      1000 |
+|    3 | Meera  | 15750 |      3000 |
+|    4 | Jitesh | 30000 |      1000 |
+|    5 | Ramesh | 12600 |      3000 |
++------+--------+-------+-----------+
+============================================================================================
+
+Q16. New employee Ajay joins the firm. His eno is 20, basic is 16000 and he is not eligible for incentivies. Store this information in table.
+
+mysql> insert into employee (eno,ename,basic) values(20,'Ajay',16000);
+Query OK, 1 row affected (0.09 sec)
+
+mysql> select * from employee;
++------+--------+-------+-----------+
+| eno  | ename  | basic | incentive |
++------+--------+-------+-----------+
+|    1 | Rajesh | 20000 |      1500 |
+|    2 | Sarita | 25000 |      1000 |
+|    3 | Meera  | 15750 |      3000 |
+|    4 | Jitesh | 30000 |      1000 |
+|    5 | Ramesh | 12600 |      3000 |
+|   20 | Ajay   | 16000 |      NULL |
++------+--------+-------+-----------+
+
+============================================================================================
+
+Q17. Meera leaves the company. Make necessary changes in table.
+
+mysql> delete from employee where eno = 3;
+
+mysql> select * from employee;
++------+--------+-------+-----------+
+| eno  | ename  | basic | incentive |
++------+--------+-------+-----------+
+|    1 | Rajesh | 20000 |      1500 |
+|    2 | Sarita | 25000 |      1000 |
+|    4 | Jitesh | 30000 |      1000 |
+|    5 | Ramesh | 12600 |      3000 |
+|   20 | Ajay   | 16000 |      NULL |
++------+--------+-------+-----------+
+
+============================================================================================
+
+Q18. Ramesh is promoted as Head Clerk and now earns salary 60000. Write query.
+
+mysql> update employee set basic = 60000 where eno = 5;
+Query OK, 1 row affected (0.17 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+mysql> select * from employee;
++------+--------+-------+-----------+
+| eno  | ename  | basic | incentive |
++------+--------+-------+-----------+
+|    1 | Rajesh | 20000 |      1500 |
+|    2 | Sarita | 25000 |      1000 |
+|    4 | Jitesh | 30000 |      1000 |
+|    5 | Ramesh | 60000 |      3000 |
+|   20 | Ajay   | 16000 |      NULL |
++------+--------+-------+-----------+
+
+============================================================================================
+
+Q19. Display empno,ame and department number of an emp working under manager with id 7698.
+
+mysql> select empno,ename,deptno from emp where mgr = 7698;
++-------+--------+--------+
+| empno | ename  | deptno |
++-------+--------+--------+
+|  7499 | ALLEN  |     30 |
+|  7521 | WARD   |     30 |
+|  7654 | MARTIN |     30 |
+|  7844 | TURNER |     30 |
+|  7900 | JAMES  |     30 |
++-------+--------+--------+
+
+============================================================================================

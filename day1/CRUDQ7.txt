@@ -1,1 +1,0 @@
-select * from vehicle where vname in ('Activa','Yamaha','Hero Splendor','Royal Enfild');

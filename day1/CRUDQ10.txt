@@ -1,1 +1,0 @@
-select vid,vname,price,details,price - discount "Total Price" from vehicle;

@@ -1,1 +1,0 @@
-select * from vehicle where price<100000;

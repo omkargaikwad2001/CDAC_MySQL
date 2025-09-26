@@ -1,1 +1,0 @@
-select sname from Salesman where city = 'Pune';

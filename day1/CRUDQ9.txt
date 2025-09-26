@@ -1,1 +1,0 @@
-select * from vehicle where vname = 'i-10';

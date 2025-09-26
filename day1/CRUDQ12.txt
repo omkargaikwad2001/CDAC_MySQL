@@ -1,1 +1,0 @@
-select * from salesman where experience>5;
