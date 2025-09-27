@@ -1,0 +1,234 @@
+1. List sum of salary for each department.
+
+mysql> SELECT e.deptno,
+    ->        (SELECT d.dname FROM dept d WHERE d.deptno = e.deptno) AS dname,
+    ->        SUM(e.sal) AS total_salary
+    -> FROM emp e
+    -> GROUP BY e.deptno;
++--------+------------+--------------+
+| deptno | dname      | total_salary |
++--------+------------+--------------+
+|     20 | RESEARCH   |     10875.00 |
+|     30 | SALES      |      9400.00 |
+|     10 | ACCOUNTING |      8750.00 |
++--------+------------+--------------+
+
+===============================================================
+
+2. List department wise sum sal only if the sum for any department is > 10000.
+
+mysql> SELECT e.deptno,
+    ->        (SELECT d.dname FROM dept d WHERE d.deptno = e.deptno) AS dname,
+    ->        SUM(e.sal) AS total_salary
+    -> FROM emp e
+    -> GROUP BY e.deptno
+    -> HAVING SUM(e.sal) > 10000;
++--------+----------+--------------+
+| deptno | dname    | total_salary |
++--------+----------+--------------+
+|     20 | RESEARCH |     10875.00 |
++--------+----------+--------------+
+
+===============================================================
+
+3. Display job wise sum of salary excluding dept 30 only if the sum salary is >9000.
+
+mysql> SELECT e.job,
+    ->        SUM(e.sal) AS total_salary
+    -> FROM emp e
+    -> WHERE e.deptno != 30
+    -> GROUP BY e.job
+    -> HAVING SUM(e.sal) > 9000;
+Empty set (0.00 sec)
+
+===============================================================
+
+4. Display job wise max sal only for managers, clerks, salesman working in dept 10 and 20. Sort the data by des order of the max salary.
+
+mysql> SELECT e.job,
+    ->        MAX(e.sal) AS max_salary
+    -> FROM emp e
+    -> WHERE e.job IN ('MANAGER', 'CLERK', 'SALESMAN')
+    ->   AND e.deptno IN (10, 20)
+    -> GROUP BY e.job
+    -> ORDER BY MAX(e.sal) DESC;
++---------+------------+
+| job     | max_salary |
++---------+------------+
+| MANAGER |    2975.00 |
+| CLERK   |    1300.00 |
++---------+------------+
+
+===============================================================
+
+5. Display job wise number of employees in all the department with sum of > 3000
+
+mysql> SELECT e.job,
+    ->        COUNT(*) AS num_employees,
+    ->        SUM(e.sal) AS total_salary
+    -> FROM emp e
+    -> GROUP BY e.job
+    -> HAVING SUM(e.sal) > 3000;
++-----------+---------------+--------------+
+| job       | num_employees | total_salary |
++-----------+---------------+--------------+
+| CLERK     |             4 |      4150.00 |
+| SALESMAN  |             4 |      5600.00 |
+| MANAGER   |             3 |      8275.00 |
+| ANALYST   |             2 |      6000.00 |
+| PRESIDENT |             1 |      5000.00 |
++-----------+---------------+--------------+
+
+===============================================================
+
+6. Display the department number having atleast 4 employees in it
+
+mysql> SELECT e.deptno
+    -> FROM emp e
+    -> GROUP BY e.deptno
+    -> HAVING COUNT(*) >= 4;
++--------+
+| deptno |
++--------+
+|     20 |
+|     30 |
++--------+
+
+===============================================================
+
+7. Display deptno, salary sum and min(sal) for all employees who are managers.
+
+mysql> SELECT e.deptno,
+    ->        SUM(e.sal) AS total_salary,
+    ->        MIN(e.sal) AS min_salary
+    -> FROM emp e
+    -> WHERE e.job = 'MANAGER'
+    -> GROUP BY e.deptno;
++--------+--------------+------------+
+| deptno | total_salary | min_salary |
++--------+--------------+------------+
+|     20 |      2975.00 |    2975.00 |
+|     30 |      2850.00 |    2850.00 |
+|     10 |      2450.00 |    2450.00 |
++--------+--------------+------------+
+
+===============================================================
+
+8. Find sum(sal) for each dept having more than 2 clerk.
+
+mysql> SELECT e.deptno,
+    ->        SUM(e.sal) AS total_salary
+    -> FROM emp e
+    -> WHERE e.job = 'CLERK'
+    -> GROUP BY e.deptno
+    -> HAVING COUNT(*) > 2;
+Empty set (0.00 sec)
+
+===============================================================
+
+9. Calculate how many employees earn sal more than 1500 in each dept.
+
+mysql> SELECT e.deptno,
+    ->        COUNT(*) AS num_employees
+    -> FROM emp e
+    -> WHERE e.sal > 1500
+    -> GROUP BY e.deptno;
++--------+---------------+
+| deptno | num_employees |
++--------+---------------+
+|     30 |             2 |
+|     20 |             3 |
+|     10 |             2 |
++--------+---------------+
+
+===============================================================
+
+10. Find how many analysts are there in each department.
+
+mysql> SELECT e.deptno,
+    ->        COUNT(*) AS num_analysts
+    -> FROM emp e
+    -> WHERE e.job = 'ANALYST'
+    -> GROUP BY e.deptno;
++--------+--------------+
+| deptno | num_analysts |
++--------+--------------+
+|     20 |            2 |
++--------+--------------+
+
+===============================================================
+
+11. To find max, min and sum of salary for all employees who work as clerks.
+
+mysql> SELECT MAX(e.sal) AS max_salary,
+    ->        MIN(e.sal) AS min_salary,
+    ->        SUM(e.sal) AS total_salary
+    -> FROM emp e
+    -> WHERE e.job = 'CLERK';
++------------+------------+--------------+
+| max_salary | min_salary | total_salary |
++------------+------------+--------------+
+|    1300.00 |     800.00 |      4150.00 |
++------------+------------+--------------+
+
+===============================================================
+
+12. Display ename, sal for dept 10 with max sal at the top.
+
+mysql> SELECT e.ename, e.sal
+    -> FROM emp e
+    -> WHERE e.deptno = 10
+    -> ORDER BY e.sal DESC;
++--------+---------+
+| ename  | sal     |
++--------+---------+
+| KING   | 5000.00 |
+| CLARK  | 2450.00 |
+| MILLER | 1300.00 |
++--------+---------+
+
+===============================================================
+
+13. Display the number of employees who has got the commission.
+
+mysql> SELECT COUNT(*) AS num_employees_with_comm
+    -> FROM emp e
+    -> WHERE e.comm IS NOT NULL;
++-------------------------+
+| num_employees_with_comm |
++-------------------------+
+|                       4 |
++-------------------------+
+
+===============================================================
+
+14. Find sum of all the salaries in emp table for emps hired in year 1981.
+
+mysql> SELECT SUM(e.sal) AS total_salary_1981
+    -> FROM emp e
+    -> WHERE YEAR(e.hiredate) = 1981;
++-------------------+
+| total_salary_1981 |
++-------------------+
+|          22825.00 |
++-------------------+
+
+===============================================================
+
+15. Display job wise max sal only for managers, clerks, salesman working to dept 10 and 20. Sort the dats by des order of the max salary
+
+mysql> SELECT e.job,
+    ->        MAX(e.sal) AS max_salary
+    -> FROM emp e
+    -> WHERE e.job IN ('MANAGER', 'CLERK', 'SALESMAN')
+    ->   AND e.deptno IN (10, 20)
+    -> GROUP BY e.job
+    -> ORDER BY MAX(e.sal) DESC;
++---------+------------+
+| job     | max_salary |
++---------+------------+
+| MANAGER |    2975.00 |
+| CLERK   |    1300.00 |
++---------+------------+
+
+===============================================================
