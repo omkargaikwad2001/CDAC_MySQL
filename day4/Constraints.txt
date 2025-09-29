@@ -1,0 +1,190 @@
+Q1. Create following tables for given schema. Apply constraints as mentioned in the schema.
+trainer(tid PK, tname not null, cid fk, salary default 20000, experience in years check>=10)
+
+trainer Table
+mysql> create table trainer(
+    ->  tid varchar(5),
+    ->  tname varchar(15) not null,
+    ->  cid varchar(5),
+    ->  salary float default 20000,
+    ->  exp float check(exp>=10),
+    ->
+    ->  constraint pk_tid primary key(tid),
+    ->  constraint fk_cid foreign key(cid) references course(cid)
+    -> );
+Query OK, 0 rows affected (0.83 sec)
+
+mysql> desc trainer;
++--------+-------------+------+-----+---------+-------+
+| Field  | Type        | Null | Key | Default | Extra |
++--------+-------------+------+-----+---------+-------+
+| tid    | varchar(5)  | NO   | PRI | NULL    |       |
+| tname  | varchar(15) | NO   |     | NULL    |       |
+| cid    | varchar(5)  | YES  | MUL | NULL    |       |
+| salary | float       | YES  |     | 20000   |       |
+| exp    | float       | YES  |     | NULL    |       |
++--------+-------------+------+-----+---------+-------+
+
+insert into trainer values('t1','Amit','c2',80000,15);
+insert into trainer values('t2','Rajan','c1',50000,13);
+insert into trainer values('t3','Shruti','c2',75000,12);
+insert into trainer values('t4','Arti','c2',90000,11);
+insert into trainer values('t5','Samer','c3',56000,10);
+insert into trainer values('t6','Sanjay',null,40000,19);
+insert into trainer values('t7','Soha',null,20000,20);
+
+mysql> select * from trainer;
++-----+--------+------+--------+------+
+| tid | tname  | cid  | salary | exp  |
++-----+--------+------+--------+------+
+| t1  | Amit   | c2   |  80000 |   15 |
+| t2  | Rajan  | c1   |  50000 |   13 |
+| t3  | Shruti | c2   |  75000 |   12 |
+| t4  | Arti   | c2   |  90000 |   11 |
+| t5  | Samer  | c3   |  56000 |   10 |
+| t6  | Sanjay | NULL |  40000 |   19 |
+| t7  | Soha   | NULL |  20000 |   20 |
++-----+--------+------+--------+------+
+
+course Table
+cource(cid,pk, cname unique not null,fees default 5000)
+
+mysql> create table course
+    ->       (cid varchar(5),
+    ->       cname varchar(15) unique not null,
+    ->       fees float default 5000,
+    ->       constraint pk_cid primary key(cid)
+    ->       );
+Query OK, 0 rows affected (1.02 sec)
+
+mysql> desc course;
++-------+-------------+------+-----+---------+-------+
+| Field | Type        | Null | Key | Default | Extra |
++-------+-------------+------+-----+---------+-------+
+| cid   | varchar(5)  | NO   | PRI | NULL    |       |
+| cname | varchar(15) | NO   | UNI | NULL    |       |
+| fees  | float       | YES  |     | 5000    |       |
++-------+-------------+------+-----+---------+-------+
+
+insert into course values('c1','Core Java',7000);
+insert into course values('c2','Linux',8000);
+insert into course values('c3','Data Structure',10000);
+insert into course values('c4','Python',12000);
+insert into course values('c5','Dot Net',null);
+insert into course values('c6','Big Data',20000);
+
+mysql> select * from course;
++-----+----------------+-------+
+| cid | cname          | fees  |
++-----+----------------+-------+
+| c1  | Core Java      |  7000 |
+| c2  | Linux          |  8000 |
+| c3  | Data Structure | 10000 |
+| c4  | Python         | 12000 |
+| c5  | Dot Net        |  NULL |
+| c6  | Big Data       | 20000 |
++-----+----------------+-------+
+
+=============================================================================
+
+1. update cid of Dot Net to c8
+
+mysql> update course
+    -> set cid = 'c8'
+    -> where cname = "dot net";
+Query OK, 1 row affected (0.21 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+mysql> select * from course;
++-----+----------------+-------+
+| cid | cname          | fees  |
++-----+----------------+-------+
+| c1  | Core Java      |  7000 |
+| c2  | Linux          |  8000 |
+| c3  | Data Structure | 10000 |
+| c4  | Python         | 12000 |
+| c6  | Big Data       | 20000 |
+| c8  | Dot Net        |  NULL |
++-----+----------------+-------+ 
+
+=============================================================================
+
+2. update cid of Sanjay to c2 and cid of soha to c15
+
+mysql> update trainer
+    -> set cid = 'c2'
+    -> where tid = 't6';
+Query OK, 1 row affected (0.18 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+mysql> update trainer
+    -> set cid = 'c15'
+    -> where tid = 't7';
+ERROR 1452 (23000): Cannot add or update a child row: a foreign key constraint fails (`knowit`.`trainer`, CONSTRAINT `fk_cid` FOREIGN KEY (`cid`) REFERENCES `course` (`cid`))
+
+mysql> select * from trainer;
++-----+--------+------+--------+------+
+| tid | tname  | cid  | salary | exp  |
++-----+--------+------+--------+------+
+| t1  | Amit   | c2   |  80000 |   15 |
+| t2  | Rajan  | c1   |  50000 |   13 |
+| t3  | Shruti | c2   |  75000 |   12 |
+| t4  | Arti   | c2   |  90000 |   11 |
+| t5  | Samer  | c3   |  56000 |   10 |
+| t6  | Sanjay | c2   |  40000 |   19 |
+| t7  | Soha   | NULL |  20000 |   20 |
++-----+--------+------+--------+------+
+
+=============================================================================
+
+3. insert in trainer(t8,'Miller',c17,'WP',20);
+
+mysql> insert into trainer values('t8','Miller','c17',56560,20);
+ERROR 1452 (23000): Cannot add or update a child row: a foreign key constraint fails (`knowit`.`trainer`, CONSTRAINT `fk_cid` FOREIGN KEY (`cid`) REFERENCES `course` (`cid`))
+
+=============================================================================
+
+4. Delete Big Data entry from course table
+
+mysql> delete from course where cname = "big data";
+Query OK, 1 row affected (0.10 sec)
+
+mysql> select * from course;
++-----+----------------+-------+
+| cid | cname          | fees  |
++-----+----------------+-------+
+| c1  | Core Java      |  7000 |
+| c2  | Linux          |  8000 |
+| c3  | Data Structure | 10000 |
+| c4  | Python         | 12000 |
+| c8  | Dot Net        |  NULL |
++-----+----------------+-------+
+
+=============================================================================
+
+5. Delete Linux entry from course table
+
+mysql> delete from course where cname = 'linux';
+ERROR 1451 (23000): Cannot delete or update a parent row: a foreign key constraint fails (`knowit`.`trainer`, CONSTRAINT `fk_cid` FOREIGN KEY (`cid`) REFERENCES `course` (`cid`))
+
+=============================================================================
+
+6. Find count of tainers to whome course is not assigned.
+
+mysql> SELECT COUNT(*) AS unassigned_trainers
+    -> FROM trainer
+    -> WHERE cid IS NULL;
++---------------------+
+| unassigned_trainers |
++---------------------+
+|                   1 |
++---------------------+
+
+=============================================================================
+
+7. Drop table course.
+
+mysql> drop table course;
+ERROR 3730 (HY000): Cannot drop table 'course' referenced by a foreign key constraint 'fk_cid' on table 'trainer'.
+
+=============================================================================

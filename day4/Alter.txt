@@ -1,0 +1,143 @@
+Q1. Consider already created employee table with schema is employee(eno,eame,basic,incentives)
+Add column job in the above table. job is designation of an employee and it is varchar(12).
+
+mysql> ALTER TABLE employee
+    -> ADD COLUMN job VARCHAR(12);
+
+mysql> select * from emp1;
++------+-------+-------+-----------+------+
+| eno  | ename | basic | incentive | job  |
++------+-------+-------+-----------+------+
+|    1 | omkar | 30000 |      1000 | NULL |
+|    2 | om    | 40000 |       500 | NULL |
+|    3 | ram   | 20000 |       200 | NULL |
++------+-------+-------+-----------+------+
+
+=====================================================================
+
+Q2. Consider already created employee table with schema employee(eno,ename,basic,incentives).
+Ramesh is promoted as head clerk. Assign him new job in the table.
+
+mysql> update emp1
+    -> set job = "Head clerk"
+    -> where eno = 4;
+Query OK, 1 row affected (0.20 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+mysql> select * from emp1;
++------+--------+-------+-----------+------------+
+| eno  | ename  | basic | incentive | job        |
++------+--------+-------+-----------+------------+
+|    1 | omkar  | 30000 |      1000 | NULL       |
+|    2 | om     | 40000 |       500 | NULL       |
+|    3 | ram    | 20000 |       200 | NULL       |
+|    4 | ramesh | 80000 |      2000 | Head clerk |
++------+--------+-------+-----------+------------+
+
+=====================================================================
+
+Q3. Consider already created employee table with schema employee(eno,ename,basic,incentives).
+Sarita and Jitesh are promoted as Analyst. Make necessary changes in the table.
+
+mysql> update emp1
+    -> set job = 'Analyst'
+    -> where eno = 5 or eno = 6;
+Query OK, 2 rows affected (0.11 sec)
+Rows matched: 2  Changed: 2  Warnings: 0
+
+mysql> select * from emp1;
++------+--------+-------+-----------+------------+
+| eno  | ename  | basic | incentive | job        |
++------+--------+-------+-----------+------------+
+|    1 | omkar  | 30000 |      1000 | NULL       |
+|    2 | om     | 40000 |       500 | NULL       |
+|    3 | ram    | 20000 |       200 | NULL       |
+|    4 | ramesh | 80000 |      2000 | Head clerk |
+|    5 | satita | 70000 |      1000 | Analyst    |
+|    6 | jitesh | 50000 |       500 | Analyst    |
++------+--------+-------+-----------+------------+
+
+=====================================================================
+
+Q4. Create following cust_vehicle with following constaints.
+tid is a transaction id PK auto_increment
+all other entries in the table are not null.
+buy_price is greater than 0.
+
+mysql> CREATE TABLE cust_vehicle (
+    ->     tid INT AUTO_INCREMENT,
+    ->     custid INT NOT NULL,
+    ->     vid INT NOT NULL,
+    ->     sid INT NOT NULL,
+    ->     buy_price DECIMAL NOT NULL CHECK(buy_price > 0),
+    ->     CONSTRAINT pk_tid PRIMARY KEY (tid)
+    -> );
+
+mysql> desc cust_vehicle;
++-----------+---------------+------+-----+---------+----------------+
+| Field     | Type          | Null | Key | Default | Extra          |
++-----------+---------------+------+-----+---------+----------------+
+| tid       | int           | NO   | PRI | NULL    | auto_increment |
+| custid    | int           | NO   |     | NULL    |                |
+| vid       | int           | NO   |     | NULL    |                |
+| sid       | int           | NO   |     | NULL    |                |
+| buy_price | decimal(10,2) | NO   |     | NULL    |                |
++-----------+---------------+------+-----+---------+----------------+
+
+insert into cust_vehicle(custid,vid,sid,buy_price) values(1,1,10,75000);
+insert into cust_vehicle(custid,vid,sid,buy_price) values(1,2,10,790000);
+insert into cust_vehicle(custid,vid,sid,buy_price) values(2,3,11,80000);
+insert into cust_vehicle(custid,vid,sid,buy_price) values(3,3,11,75000);
+insert into cust_vehicle(custid,vid,sid,buy_price) values(3,2,10,800000);
+
+mysql> select * from cust_vehicle;
++-----+--------+-----+-----+-----------+
+| tid | custid | vid | sid | buy_price |
++-----+--------+-----+-----+-----------+
+|   1 |      1 |   1 |  10 |  75000.00 |
+|   2 |      1 |   2 |  10 | 790000.00 |
+|   3 |      2 |   3 |  11 |  80000.00 |
+|   4 |      3 |   3 |  11 |  75000.00 |
+|   5 |      3 |   2 |  10 | 800000.00 |
++-----+--------+-----+-----+-----------+
+
+Add new column by name rating with int data type in cust_vehicle table.
+
+mysql> alter table cust_vehicle
+    -> add column rating int;
+Query OK, 0 rows affected (0.25 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> select * from cust_vehicle;
++-----+--------+-----+-----+-----------+--------+
+| tid | custid | vid | sid | buy_price | rating |
++-----+--------+-----+-----+-----------+--------+
+|   1 |      1 |   1 |  10 |  75000.00 |   NULL |
+|   2 |      1 |   2 |  10 | 790000.00 |   NULL |
+|   3 |      2 |   3 |  11 |  80000.00 |   NULL |
+|   4 |      3 |   3 |  11 |  75000.00 |   NULL |
+|   5 |      3 |   2 |  10 | 800000.00 |   NULL |
++-----+--------+-----+-----+-----------+--------+
+
+=====================================================================
+
+Q5. Change datatype of buy_price column in cust_vehicle table to float.
+
+mysql> ALTER TABLE cust_vehicle
+    -> MODIFY COLUMN buy_price FLOAT NOT NULL CHECK (buy_price > 0);
+Query OK, 5 rows affected (1.34 sec)
+Records: 5  Duplicates: 0  Warnings: 0
+
+mysql> desc cust_vehicle;
++-----------+-------+------+-----+---------+----------------+
+| Field     | Type  | Null | Key | Default | Extra          |
++-----------+-------+------+-----+---------+----------------+
+| tid       | int   | NO   | PRI | NULL    | auto_increment |
+| custid    | int   | NO   |     | NULL    |                |
+| vid       | int   | NO   |     | NULL    |                |
+| sid       | int   | NO   |     | NULL    |                |
+| buy_price | float | NO   |     | NULL    |                |
+| rating    | int   | YES  |     | NULL    |                |
++-----------+-------+------+-----+---------+----------------+
+
+=====================================================================
