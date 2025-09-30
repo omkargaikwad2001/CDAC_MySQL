@@ -1,0 +1,386 @@
+Q1. Display all employees who earn sal more than smith earns.
+
+mysql> select sal
+    -> from emp
+    -> where ename = 'smith';
++--------+
+| sal    |
++--------+
+| 800.00 |
++--------+
+1 row in set (0.02 sec)
+
+mysql> select *
+    -> from emp
+    -> where sal>(select sal
+    ->     from emp
+    ->     where ename = 'smith');
++-------+--------+-----------+------+------------+---------+---------+--------+
+| EMPNO | ENAME  | JOB       | MGR  | HIREDATE   | SAL     | COMM    | DEPTNO |
++-------+--------+-----------+------+------------+---------+---------+--------+
+|  7499 | ALLEN  | SALESMAN  | 7698 | 1981-02-20 | 1600.00 |  300.00 |     30 |
+|  7521 | WARD   | SALESMAN  | 7698 | 1981-02-22 | 1250.00 |  500.00 |     30 |
+|  7566 | JONES  | MANAGER   | 7839 | 1981-04-02 | 2975.00 |    NULL |     20 |
+|  7654 | MARTIN | SALESMAN  | 7698 | 1981-09-28 | 1250.00 | 1400.00 |     30 |
+|  7698 | BLAKE  | MANAGER   | 7839 | 1981-05-01 | 2850.00 |    NULL |     30 |
+|  7782 | CLARK  | MANAGER   | 7839 | 1981-09-06 | 2450.00 |    NULL |     10 |
+|  7788 | SCOTT  | ANALYST   | 7566 | 1982-12-09 | 3000.00 |    NULL |     20 |
+|  7839 | KING   | PRESIDENT | NULL | 1981-11-17 | 5000.00 |    NULL |     10 |
+|  7844 | TURNER | SALESMAN  | 7698 | 1981-09-08 | 1500.00 |    0.00 |     30 |
+|  7876 | ADAMS  | CLERK     | 7788 | 1983-01-12 | 1100.00 |    NULL |     20 |
+|  7900 | JAMES  | CLERK     | 7698 | 1981-12-03 |  950.00 |    NULL |     30 |
+|  7902 | FORD   | ANALYST   | 7566 | 1981-12-03 | 3000.00 |    NULL |     20 |
+|  7934 | MILLER | CLERK     | 7782 | 1982-01-23 | 1300.00 |    NULL |     10 |
++-------+--------+-----------+------+------------+---------+---------+--------+
+
+=================================================================================
+
+Q2. Display all employees earn sal more than that Martin and Ford earn.
+
+mysql> select *
+    -> from emp
+    -> where sal > (select max(sal)
+    ->              from emp
+    ->              where ename in ('MARTIN', 'FORD'));
++-------+-------+-----------+------+------------+---------+------+--------+
+| EMPNO | ENAME | JOB       | MGR  | HIREDATE   | SAL     | COMM | DEPTNO |
++-------+-------+-----------+------+------------+---------+------+--------+
+|  7839 | KING  | PRESIDENT | NULL | 1981-11-17 | 5000.00 | NULL |     10 |
++-------+-------+-----------+------+------------+---------+------+--------+
+
+=================================================================================
+
+Q3. Display all employees who earn salary < Scott and salary > Adams sal.
+
+mysql> select *
+    -> from emp
+    -> where sal>(select sal
+    ->          from emp
+    ->          where ename = 'adams')
+    ->  and sal<(select sal
+    ->          from emp
+    ->          where ename = 'scott');
++-------+--------+----------+------+------------+---------+---------+--------+
+| EMPNO | ENAME  | JOB      | MGR  | HIREDATE   | SAL     | COMM    | DEPTNO |
++-------+--------+----------+------+------------+---------+---------+--------+
+|  7499 | ALLEN  | SALESMAN | 7698 | 1981-02-20 | 1600.00 |  300.00 |     30 |
+|  7521 | WARD   | SALESMAN | 7698 | 1981-02-22 | 1250.00 |  500.00 |     30 |
+|  7566 | JONES  | MANAGER  | 7839 | 1981-04-02 | 2975.00 |    NULL |     20 |
+|  7654 | MARTIN | SALESMAN | 7698 | 1981-09-28 | 1250.00 | 1400.00 |     30 |
+|  7698 | BLAKE  | MANAGER  | 7839 | 1981-05-01 | 2850.00 |    NULL |     30 |
+|  7782 | CLARK  | MANAGER  | 7839 | 1981-09-06 | 2450.00 |    NULL |     10 |
+|  7844 | TURNER | SALESMAN | 7698 | 1981-09-08 | 1500.00 |    0.00 |     30 |
+|  7934 | MILLER | CLERK    | 7782 | 1982-01-23 | 1300.00 |    NULL |     10 |
++-------+--------+----------+------+------------+---------+---------+--------+
+
+=================================================================================
+
+Q4. Display all employees with salary > either ward's salary or Blake's sal.
+
+mysql> select *
+    -> from emp
+    -> where sal>(select sal
+    ->          from emp
+    ->          where ename = 'ward')
+    ->  or sal>(select sal
+    ->          from emp
+    ->          where ename = 'blake');
++-------+--------+-----------+------+------------+---------+--------+--------+
+| EMPNO | ENAME  | JOB       | MGR  | HIREDATE   | SAL     | COMM   | DEPTNO |
++-------+--------+-----------+------+------------+---------+--------+--------+
+|  7499 | ALLEN  | SALESMAN  | 7698 | 1981-02-20 | 1600.00 | 300.00 |     30 |
+|  7566 | JONES  | MANAGER   | 7839 | 1981-04-02 | 2975.00 |   NULL |     20 |
+|  7698 | BLAKE  | MANAGER   | 7839 | 1981-05-01 | 2850.00 |   NULL |     30 |
+|  7782 | CLARK  | MANAGER   | 7839 | 1981-09-06 | 2450.00 |   NULL |     10 |
+|  7788 | SCOTT  | ANALYST   | 7566 | 1982-12-09 | 3000.00 |   NULL |     20 |
+|  7839 | KING   | PRESIDENT | NULL | 1981-11-17 | 5000.00 |   NULL |     10 |
+|  7844 | TURNER | SALESMAN  | 7698 | 1981-09-08 | 1500.00 |   0.00 |     30 |
+|  7902 | FORD   | ANALYST   | 7566 | 1981-12-03 | 3000.00 |   NULL |     20 |
+|  7934 | MILLER | CLERK     | 7782 | 1982-01-23 | 1300.00 |   NULL |     10 |
++-------+--------+-----------+------+------------+---------+--------+--------+
+
+=================================================================================
+
+Q5. Display all employees who earn more than average sal of dept 10.
+
+mysql> select *
+    -> from emp
+    -> where sal>(select avg(sal)
+    ->          from emp
+    ->          where deptno=10);
++-------+-------+-----------+------+------------+---------+------+--------+
+| EMPNO | ENAME | JOB       | MGR  | HIREDATE   | SAL     | COMM | DEPTNO |
++-------+-------+-----------+------+------------+---------+------+--------+
+|  7566 | JONES | MANAGER   | 7839 | 1981-04-02 | 2975.00 | NULL |     20 |
+|  7788 | SCOTT | ANALYST   | 7566 | 1982-12-09 | 3000.00 | NULL |     20 |
+|  7839 | KING  | PRESIDENT | NULL | 1981-11-17 | 5000.00 | NULL |     10 |
+|  7902 | FORD  | ANALYST   | 7566 | 1981-12-03 | 3000.00 | NULL |     20 |
++-------+-------+-----------+------+------------+---------+------+--------+
+
+=================================================================================
+
+Q6. Dispaly all employees who are working in sales department.
+
+mysql> select *
+    -> from emp
+    -> where deptno = (select deptno
+    ->          from dept
+    ->          where dname = 'sales');
++-------+--------+----------+------+------------+---------+---------+--------+
+| EMPNO | ENAME  | JOB      | MGR  | HIREDATE   | SAL     | COMM    | DEPTNO |
++-------+--------+----------+------+------------+---------+---------+--------+
+|  7499 | ALLEN  | SALESMAN | 7698 | 1981-02-20 | 1600.00 |  300.00 |     30 |
+|  7521 | WARD   | SALESMAN | 7698 | 1981-02-22 | 1250.00 |  500.00 |     30 |
+|  7654 | MARTIN | SALESMAN | 7698 | 1981-09-28 | 1250.00 | 1400.00 |     30 |
+|  7698 | BLAKE  | MANAGER  | 7839 | 1981-05-01 | 2850.00 |    NULL |     30 |
+|  7844 | TURNER | SALESMAN | 7698 | 1981-09-08 | 1500.00 |    0.00 |     30 |
+|  7900 | JAMES  | CLERK    | 7698 | 1981-12-03 |  950.00 |    NULL |     30 |
++-------+--------+----------+------+------------+---------+---------+--------+
+
+=================================================================================
+
+Q7. Create table category
+
+create table category(
+	cid int primary key,
+	cname varchar(15) unique not null,
+	description varchar(30)	
+
+);
+
+insert into category values(1,'chips','very crunchy');
+insert into category values(2,'chocolate','very chocolaty');
+insert into category values(3,'snacks','yummy');
+insert into category values(4,'cold drinks','Thanda Thanda cool cool');
+
+mysql> select * from category;
++-----+-------------+-------------------------+
+| cid | cname       | description             |
++-----+-------------+-------------------------+
+|   1 | chips       | very crunchy            |
+|   2 | chocolate   | very chocolaty          |
+|   3 | snacks      | yummy                   |
+|   4 | cold drinks | Thanda Thanda cool cool |
++-----+-------------+-------------------------+
+
+Create table Product
+
+create table product(
+	pid int primary key,
+	pname varchar(20),
+	price float(6,2) default 20.00,
+	qty int check(qty>0),
+	cid int,
+	sid int,
+	constraint fk_cid2 foreign key(cid) references category(cid) on delete set null,
+	constraint fk_sid foreign key(sid) references salesman(sid)
+);
+
+insert into product values(123,'lays',30.00,30,1,12);
+insert into product values(111,'pepsi',50.00,40,4,11);
+insert into product values(134,'nachos',50.00,50,1,12);
+insert into product values(124,'dairy milk',60.00,40,2,14);
+insert into product values(125,'pringles',60.00,40,1,14);
+insert into product values(213,'sketch pens',150.00,56,null,11);
+insert into product values(167,'eraser',5.00,90,null,null);
+
+mysql> select * from product;
++-----+-------------+--------+------+------+------+
+| pid | pname       | price  | qty  | cid  | sid  |
++-----+-------------+--------+------+------+------+
+| 111 | pepsi       |  50.00 |   40 |    4 |   11 |
+| 123 | lays        |  30.00 |   30 |    1 |   12 |
+| 124 | dairy milk  |  60.00 |   40 |    2 |   14 |
+| 125 | pringles    |  60.00 |   40 |    1 |   14 |
+| 134 | nachos      |  50.00 |   50 |    1 |   12 |
+| 167 | eraser      |   5.00 |   90 | NULL | NULL |
+| 213 | sketch pens | 150.00 |   56 | NULL |   11 |
++-----+-------------+--------+------+------+------+
+
+create table salesman
+
+create table salesman(
+	sid int primary key,
+	sname varchar(15) unique not null,
+	city varchar(15)
+);
+
+insert into salesman values(11,'rahul','pune');
+insert into salesman values(12,'kriti','mumbai');
+insert into salesman values(13,'prasad','nashik');
+insert into salesman values(14,'arnav','amravati');
+
+mysql> select * from salesman;
++-----+--------+----------+
+| sid | sname  | city     |
++-----+--------+----------+
+|  11 | rahul  | pune     |
+|  12 | kriti  | mumbai   |
+|  13 | prasad | nashik   |
+|  14 | arnav  | amravati |
++-----+--------+----------+
+
+1.List all pid,pname,cid,cname with category chips.
+
+mysql> select p.pid, p.pname, p.cid, c.cname
+    -> from product p, category c
+    -> where p.cid = (select cid from category where cname = 'chips')
+    ->   and p.cid = c.cid;
++-----+----------+------+-------+
+| pid | pname    | cid  | cname |
++-----+----------+------+-------+
+| 123 | lays     |    1 | chips |
+| 125 | pringles |    1 | chips |
+| 134 | nachos   |    1 | chips |
++-----+----------+------+-------+
+
+2.Display all salesmen who did not sell any product
+
+mysql> select *
+    -> from salesman
+    -> where sid not in (select sid
+    ->          from product
+    ->          where sid is not null);
++-----+--------+--------+
+| sid | sname  | city   |
++-----+--------+--------+
+|  13 | prasad | nashik |
++-----+--------+--------+
+
+3.Display all category for which no product is assigned
+
+mysql> select *
+    -> from category
+    -> where cid not in (select cid from product where cid is not null);
++-----+--------+-------------+
+| cid | cname  | description |
++-----+--------+-------------+
+|   3 | snacks | yummy       |
++-----+--------+-------------+
+
+4.Display all products to which category is not assigned
+
+mysql> select *
+    -> from product
+    -> where cid is null;
++-----+-------------+--------+------+------+------+
+| pid | pname       | price  | qty  | cid  | sid  |
++-----+-------------+--------+------+------+------+
+| 167 | eraser      |   5.00 |   90 | NULL | NULL |
+| 213 | sketch pens | 150.00 |   56 | NULL |   11 |
++-----+-------------+--------+------+------+------+
+
+5.List all salesmen who stays in city where name starts with P or N
+
+mysql> select *
+    -> from salesman
+    -> where regexp_like(city,'^[pn]');
++-----+--------+--------+
+| sid | sname  | city   |
++-----+--------+--------+
+|  11 | rahul  | pune   |
+|  13 | prasad | nashik |
++-----+--------+--------+
+
+6.Add new column in salesman table by name credit limit.
+
+mysql> alter table salesman
+    -> add column credit_limit float not null default 0;
+Query OK, 0 rows affected (0.30 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> select * from salesman;
++-----+--------+----------+--------------+
+| sid | sname  | city     | credit_limit |
++-----+--------+----------+--------------+
+|  11 | rahul  | pune     |            0 |
+|  12 | kriti  | mumbai   |            0 |
+|  13 | prasad | nashik   |            0 |
+|  14 | arnav  | amravati |            0 |
++-----+--------+----------+--------------+
+
+7.Write a query which will display dept no and dept names to which no employee is assigned dept. Use emp and dept table.
+
+mysql> select *
+    -> from dept
+    -> where deptno not in (select deptno from emp where deptno is not null);
++--------+------------+--------+
+| DEPTNO | DNAME      | LOC    |
++--------+------------+--------+
+|     40 | OPERATIONS | BOSTON |
++--------+------------+--------+
+
+=================================================================================
+
+Q8. List all employees reporting to Blake
+
+mysql> select *
+    -> from emp
+    -> where mgr = (select empno
+    ->          from emp
+    ->          where ename = 'blake');
++-------+--------+----------+------+------------+---------+---------+--------+
+| EMPNO | ENAME  | JOB      | MGR  | HIREDATE   | SAL     | COMM    | DEPTNO |
++-------+--------+----------+------+------------+---------+---------+--------+
+|  7499 | ALLEN  | SALESMAN | 7698 | 1981-02-20 | 1600.00 |  300.00 |     30 |
+|  7521 | WARD   | SALESMAN | 7698 | 1981-02-22 | 1250.00 |  500.00 |     30 |
+|  7654 | MARTIN | SALESMAN | 7698 | 1981-09-28 | 1250.00 | 1400.00 |     30 |
+|  7844 | TURNER | SALESMAN | 7698 | 1981-09-08 | 1500.00 |    0.00 |     30 |
+|  7900 | JAMES  | CLERK    | 7698 | 1981-12-03 |  950.00 |    NULL |     30 |
++-------+--------+----------+------+------------+---------+---------+--------+
+
+=================================================================================
+
+Q9. Diaplsy all employees working in the dept whose location is Chicago and are salesman.
+
+mysql> select *
+    -> from emp
+    -> where deptno in (select deptno
+    ->                  from dept
+    ->                  where loc = 'chicago')
+    ->   and job = 'salesman';
++-------+--------+----------+------+------------+---------+---------+--------+
+| EMPNO | ENAME  | JOB      | MGR  | HIREDATE   | SAL     | COMM    | DEPTNO |
++-------+--------+----------+------+------------+---------+---------+--------+
+|  7499 | ALLEN  | SALESMAN | 7698 | 1981-02-20 | 1600.00 |  300.00 |     30 |
+|  7521 | WARD   | SALESMAN | 7698 | 1981-02-22 | 1250.00 |  500.00 |     30 |
+|  7654 | MARTIN | SALESMAN | 7698 | 1981-09-28 | 1250.00 | 1400.00 |     30 |
+|  7844 | TURNER | SALESMAN | 7698 | 1981-09-08 | 1500.00 |    0.00 |     30 |
++-------+--------+----------+------+------------+---------+---------+--------+
+
+=================================================================================
+
+Q10. List all employees getting sal less than the salary of an employee whose empno is 7689.
+
+mysql> select *
+    -> from emp
+    -> where sal<(select sal
+    ->          from emp
+    ->          where empno = 7689);
+Empty set (0.00 sec)
+
+=================================================================================
+
+Q11. List all employees getting sal less than min salary of all the dept in the company.
+
+mysql> select *
+    -> from emp
+    -> where sal < (select min(sal) from emp);
+Empty set (0.00 sec)
+
+=================================================================================
+
+Q12. Write a query to display all employees reporting to mgr 7689 or 7839.
+
+mysql>  select *
+    -> from emp
+    -> where mgr in (7689,7839);
++-------+-------+---------+------+------------+---------+------+--------+
+| EMPNO | ENAME | JOB     | MGR  | HIREDATE   | SAL     | COMM | DEPTNO |
++-------+-------+---------+------+------------+---------+------+--------+
+|  7566 | JONES | MANAGER | 7839 | 1981-04-02 | 2975.00 | NULL |     20 |
+|  7698 | BLAKE | MANAGER | 7839 | 1981-05-01 | 2850.00 | NULL |     30 |
+|  7782 | CLARK | MANAGER | 7839 | 1981-09-06 | 2450.00 | NULL |     10 |
++-------+-------+---------+------+------------+---------+------+--------+
+
+=================================================================================
