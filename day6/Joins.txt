@@ -1,0 +1,361 @@
+Q1. List all rooms which are allocated or not allocated to any courses. Use joins.
+
+mysql> select r.rid, r.rname, c.cid, c.cname
+    -> from room r
+    -> left join courses c
+    ->   on r.rid = c.rid;
++-----+--------+------+-------+
+| rid | rname  | cid  | cname |
++-----+--------+------+-------+
+| 100 | Jasmin |  121 | DBDA  |
+| 101 | Rose   |  131 | DAC   |
+| 103 | Mogra  | NULL | NULL  |
+| 105 | Lotus  |  151 | DOIT  |
++-----+--------+------+-------+
+
+=======================================================================
+
+Q2. Display all products sold by Kriti
+
+mysql> select s.sid,s.sname,p.pid,p.pname
+    -> from salesman s
+    -> join product p
+    -> on s.sid = p.sid
+    -> where s.sid=12;
++-----+-------+-----+--------+
+| sid | sname | pid | pname  |
++-----+-------+-----+--------+
+|  12 | kriti | 123 | lays   |
+|  12 | kriti | 134 | nachos |
++-----+-------+-----+--------+
+
+=======================================================================
+
+Q3. Consider emp and dept table display empno,ename,sal,deptno,dname and loc for all employees getting grade 2 salary.
+
+mysql> select e.empno,
+    ->        e.ename,
+    ->        e.sal,
+    ->        e.deptno,
+    ->        d.dname,
+    ->        d.loc
+    -> from emp e
+    -> join dept d
+    ->   on e.deptno = d.deptno
+    -> join salgrade s
+    ->   on e.sal between s.losal and s.hisal
+    -> where s.grade = 2;
++-------+--------+---------+--------+------------+----------+
+| empno | ename  | sal     | deptno | dname      | loc      |
++-------+--------+---------+--------+------------+----------+
+|  7934 | MILLER | 1300.00 |     10 | ACCOUNTING | NEW YORK |
+|  7654 | MARTIN | 1250.00 |     30 | SALES      | CHICAGO  |
+|  7521 | WARD   | 1250.00 |     30 | SALES      | CHICAGO  |
++-------+--------+---------+--------+------------+----------+
+ 
+=======================================================================
+
+Q4. Consider emp and dept table display empno,ename,deptno,dname and loc for all employees who are working as managers and joined in year 1981.
+
+mysql> select e.empno,
+    ->        e.ename,
+    ->        e.deptno,
+    ->        d.dname,
+    ->        d.loc
+    -> from emp e
+    -> join dept d
+    ->   on e.deptno = d.deptno
+    -> where e.job = 'MANAGER'
+    ->   and year(e.hiredate) = 1981;
++-------+-------+--------+------------+----------+
+| empno | ename | deptno | dname      | loc      |
++-------+-------+--------+------------+----------+
+|  7782 | CLARK |     10 | ACCOUNTING | NEW YORK |
+|  7566 | JONES |     20 | RESEARCH   | DALLAS   |
+|  7698 | BLAKE |     30 | SALES      | CHICAGO  |
++-------+-------+--------+------------+----------+
+
+=======================================================================
+
+Q5. Consider emp and dept table display deptno and dname to whom employees are assigned and also the depts to whom employees are not assigned.
+
+mysql> select d.deptno,
+    ->        d.dname
+    -> from dept d
+    -> left join emp e
+    ->   on d.deptno = e.deptno
+    -> group by d.deptno, d.dname;
++--------+------------+
+| deptno | dname      |
++--------+------------+
+|     10 | ACCOUNTING |
+|     20 | RESEARCH   |
+|     30 | SALES      |
+|     40 | OPERATIONS |
++--------+------------+
+
+=======================================================================
+
+Q6. From emp table, display empno,ename,mgr and name of manager for each employee.
+
+mysql> select e.empno,
+    ->        e.ename,
+    ->        e.mgr,
+    ->        m.ename as manager_name
+    -> from emp e
+    -> left join emp m
+    ->   on e.mgr = m.empno;
++-------+--------+------+--------------+
+| empno | ename  | mgr  | manager_name |
++-------+--------+------+--------------+
+|  7369 | SMITH  | 7902 | FORD         |
+|  7499 | ALLEN  | 7698 | BLAKE        |
+|  7521 | WARD   | 7698 | BLAKE        |
+|  7566 | JONES  | 7839 | KING         |
+|  7654 | MARTIN | 7698 | BLAKE        |
+|  7698 | BLAKE  | 7839 | KING         |
+|  7782 | CLARK  | 7839 | KING         |
+|  7788 | SCOTT  | 7566 | JONES        |
+|  7839 | KING   | NULL | NULL         |
+|  7844 | TURNER | 7698 | BLAKE        |
+|  7876 | ADAMS  | 7788 | SCOTT        |
+|  7900 | JAMES  | 7698 | BLAKE        |
+|  7902 | FORD   | 7566 | JONES        |
+|  7934 | MILLER | 7782 | CLARK        |
++-------+--------+------+--------------+
+
+=======================================================================
+
+Q7. Create table Product_table
+
+create table product_table(
+pid int,
+pname varchar(20),
+sid int
+);
+
+insert into product_table values(1,'pen',2);
+insert into product_table values(2,'pencil',3);
+insert into product_table values(3,'eraser',2);
+insert into product_table values(4,'sketch pens',1);
+
+mysql> select * from product_table;
++------+-------------+------+
+| pid  | pname       | sid  |
++------+-------------+------+
+|    1 | pen         |    2 |
+|    2 | pencil      |    3 |
+|    3 | eraser      |    2 |
+|    4 | sketch pens |    1 |
++------+-------------+------+
+
+here sid is sample id which is given as a free mple product sold
+
+Write a query to display pid,pname,sid and sample name for all the products.
+
+mysql> select p.pid,
+    ->        p.pname,
+    ->        p.sid,
+    ->        s.pname as sample_name
+    -> from product_table p
+    -> join product_table s
+    ->   on p.sid = s.pid;
++------+-------------+------+-------------+
+| pid  | pname       | sid  | sample_name |
++------+-------------+------+-------------+
+|    4 | sketch pens |    1 | pen         |
+|    3 | eraser      |    2 | pencil      |
+|    1 | pen         |    2 | pencil      |
+|    2 | pencil      |    3 | eraser      |
++------+-------------+------+-------------+
+
+=======================================================================
+
+Q8. Write a query to display prodid,pname,qty,price,sid,sname and city for all products having price greater than 50.
+
+mysql> select p.pid,p.pname,p.qty,p.price,p.sid,s.sname,s.city
+    -> from product p
+    -> join salesman s
+    -> on p.sid = s.sid
+    -> where p.price>50;
++-----+-------------+------+--------+------+-------+----------+
+| pid | pname       | qty  | price  | sid  | sname | city     |
++-----+-------------+------+--------+------+-------+----------+
+| 124 | dairy milk  |   40 |  60.00 |   14 | arnav | amravati |
+| 125 | pringles    |   40 |  60.00 |   14 | arnav | amravati |
+| 213 | sketch pens |   56 | 150.00 |   11 | rahul | pune     |
++-----+-------------+------+--------+------+-------+----------+
+
+=======================================================================
+
+Q9. List all pid,pname,cid,cname with category chips.
+
+mysql> select p.pid,p.pname,p.cid,c.cname
+    -> from product p
+    -> join category c
+    -> on p.cid = c.cid
+    -> where c.cid = (select c.cid
+    ->          where c.cname='chips');
++-----+----------+------+-------+
+| pid | pname    | cid  | cname |
++-----+----------+------+-------+
+| 123 | lays     |    1 | chips |
+| 125 | pringles |    1 | chips |
+| 134 | nachos   |    1 | chips |
++-----+----------+------+-------+
+
+=======================================================================
+
+Q10. Consider emp,dept,salgrade tables and solve the following query.
+
+Display empno,ename,deptno,dname,sal,grade.
+
+mysql> select e.empno,e.ename,e.deptno,e.sal,d.dname,s.grade
+    -> from emp e
+    -> join dept d
+    -> on e.deptno = d.deptno
+    -> join salgrade s
+    -> on e.sal between s.losal and s.hisal;
++-------+--------+--------+---------+------------+-------+
+| empno | ename  | deptno | sal     | dname      | grade |
++-------+--------+--------+---------+------------+-------+
+|  7900 | JAMES  |     30 |  950.00 | SALES      |     1 |
+|  7876 | ADAMS  |     20 | 1100.00 | RESEARCH   |     1 |
+|  7369 | SMITH  |     20 |  800.00 | RESEARCH   |     1 |
+|  7934 | MILLER |     10 | 1300.00 | ACCOUNTING |     2 |
+|  7654 | MARTIN |     30 | 1250.00 | SALES      |     2 |
+|  7521 | WARD   |     30 | 1250.00 | SALES      |     2 |
+|  7844 | TURNER |     30 | 1500.00 | SALES      |     3 |
+|  7499 | ALLEN  |     30 | 1600.00 | SALES      |     3 |
+|  7902 | FORD   |     20 | 3000.00 | RESEARCH   |     4 |
+|  7788 | SCOTT  |     20 | 3000.00 | RESEARCH   |     4 |
+|  7782 | CLARK  |     10 | 2450.00 | ACCOUNTING |     4 |
+|  7698 | BLAKE  |     30 | 2850.00 | SALES      |     4 |
+|  7566 | JONES  |     20 | 2975.00 | RESEARCH   |     4 |
+|  7839 | KING   |     10 | 5000.00 | ACCOUNTING |     5 |
++-------+--------+--------+---------+------------+-------+
+
+=======================================================================
+
+Q11. Company decides to give rise to all employees depending on their salary grade. Information of which is stored in increment table. Create the table. Stored the data and solve the query.
+
+create table increment(grade int,hike int);
+
+insert into increment values(1,10);
+insert into increment values(2,7);
+insert into increment values(3,5);
+insert into increment values(4,2);
+insert into increment values(5,null);
+
+mysql> select * from increment;
++-------+------+
+| grade | hike |
++-------+------+
+|     1 |   10 |
+|     2 |    7 |
+|     3 |    5 |
+|     4 |    2 |
+|     5 | NULL |
++-------+------+
+
+mysql> select e.empno,
+    ->        e.ename,
+    ->        e.deptno,
+    ->        d.dname,
+    ->        e.sal,
+    ->        s.grade,
+    ->        i.hike
+    -> from emp e
+    -> join dept d
+    ->   on e.deptno = d.deptno
+    -> join salgrade s
+    ->   on e.sal between s.losal and s.hisal
+    -> join increment i
+    ->   on s.grade = i.grade;
++-------+--------+--------+------------+---------+-------+------+
+| empno | ename  | deptno | dname      | sal     | grade | hike |
++-------+--------+--------+------------+---------+-------+------+
+|  7369 | SMITH  |     20 | RESEARCH   |  800.00 |     1 |   10 |
+|  7876 | ADAMS  |     20 | RESEARCH   | 1100.00 |     1 |   10 |
+|  7900 | JAMES  |     30 | SALES      |  950.00 |     1 |   10 |
+|  7521 | WARD   |     30 | SALES      | 1250.00 |     2 |    7 |
+|  7654 | MARTIN |     30 | SALES      | 1250.00 |     2 |    7 |
+|  7934 | MILLER |     10 | ACCOUNTING | 1300.00 |     2 |    7 |
+|  7499 | ALLEN  |     30 | SALES      | 1600.00 |     3 |    5 |
+|  7844 | TURNER |     30 | SALES      | 1500.00 |     3 |    5 |
+|  7566 | JONES  |     20 | RESEARCH   | 2975.00 |     4 |    2 |
+|  7698 | BLAKE  |     30 | SALES      | 2850.00 |     4 |    2 |
+|  7782 | CLARK  |     10 | ACCOUNTING | 2450.00 |     4 |    2 |
+|  7788 | SCOTT  |     20 | RESEARCH   | 3000.00 |     4 |    2 |
+|  7902 | FORD   |     20 | RESEARCH   | 3000.00 |     4 |    2 |
+|  7839 | KING   |     10 | ACCOUNTING | 5000.00 |     5 | NULL |
++-------+--------+--------+------------+---------+-------+------+
+
+=======================================================================
+
+Q12. For every employee display empno,ename,mgr and name of a manager to whom employee is reporting. Display above data for salesman.
+
+mysql> select e.empno,
+    ->        e.ename,
+    ->        e.mgr,
+    ->        m.ename as manager_name
+    -> from emp e
+    -> join emp m
+    ->   on e.mgr = m.empno
+    -> where e.job = 'SALESMAN';
++-------+--------+------+--------------+
+| empno | ename  | mgr  | manager_name |
++-------+--------+------+--------------+
+|  7844 | TURNER | 7698 | BLAKE        |
+|  7654 | MARTIN | 7698 | BLAKE        |
+|  7521 | WARD   | 7698 | BLAKE        |
+|  7499 | ALLEN  | 7698 | BLAKE        |
++-------+--------+------+--------------+
+
+=======================================================================
+
+Q13. List details of all employees who work for Dallas location and had joined in year 1980. Try using join as well as subquery.
+
+mysql> select e.empno,
+    ->        e.ename,
+    ->        e.job,
+    ->        e.sal,
+    ->        e.hiredate,
+    ->        e.deptno,
+    ->        d.dname,
+    ->        d.loc
+    -> from emp e
+    -> join dept d
+    ->   on e.deptno = d.deptno
+    -> where d.loc = 'DALLAS'
+    ->   and year(e.hiredate) = 1980;
++-------+-------+-------+--------+------------+--------+----------+--------+
+| empno | ename | job   | sal    | hiredate   | deptno | dname    | loc    |
++-------+-------+-------+--------+------------+--------+----------+--------+
+|  7369 | SMITH | CLERK | 800.00 | 1980-12-17 |     20 | RESEARCH | DALLAS |
++-------+-------+-------+--------+------------+--------+----------+--------+
+
+=======================================================================
+
+Q14. List ename,sal,deptno,dname for all employees who earn more than the avg salary of the organization. Try using joins as well as subquery.
+
+mysql> select e.ename,
+    ->        e.sal,
+    ->        e.deptno,
+    ->        d.dname
+    -> from emp e
+    -> join dept d
+    ->   on e.deptno = d.deptno
+    -> where e.sal > (select avg(sal) from emp);
++-------+---------+--------+------------+
+| ename | sal     | deptno | dname      |
++-------+---------+--------+------------+
+| JONES | 2975.00 |     20 | RESEARCH   |
+| BLAKE | 2850.00 |     30 | SALES      |
+| CLARK | 2450.00 |     10 | ACCOUNTING |
+| SCOTT | 3000.00 |     20 | RESEARCH   |
+| KING  | 5000.00 |     10 | ACCOUNTING |
+| FORD  | 3000.00 |     20 | RESEARCH   |
++-------+---------+--------+------------+
+
+=======================================================================
