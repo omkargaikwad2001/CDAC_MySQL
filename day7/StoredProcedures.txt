@@ -1,0 +1,196 @@
+Q1.Write a stored procedure which will find avg of all the salaries in the table Display avg sal in the procedure.
+
+mysql> DELIMITER //
+mysql>
+mysql> CREATE PROCEDURE display()
+    -> BEGIN
+    ->     SELECT AVG(sal) AS avg_salary
+    ->     FROM emp;
+    -> END //
+Query OK, 0 rows affected (0.16 sec)
+
+mysql>
+mysql> DELIMITER ;
+mysql> CALL display();
++-------------+
+| avg_salary  |
++-------------+
+| 2601.666667 |
++-------------+
+1 row in set (0.00 sec)
+
+===================================================================
+
+Q2. Write a stored procedure which will find avg salary of dept no 20. Display avg salary out of the procedure.
+
+mysql> DELIMITER //
+mysql>
+mysql> CREATE PROCEDURE display2()
+    -> BEGIN
+    ->  select avg(sal)
+    ->  from emp
+    ->  where deptno=20;
+    ->
+    -> END //
+Query OK, 0 rows affected (0.21 sec)
+
+mysql>
+mysql> DELIMITER ;
+mysql>
+mysql> call display2();
++-------------+
+| avg(sal)    |
++-------------+
+| 3479.166667 |
++-------------+
+1 row in set (0.03 sec)
+
+===================================================================
+
+Q3. Write a stored procedure which will find avg salary for any deptno passed to it. pass deptno as in parameter and avg(sal) as out parameter.
+
+mysql> DELIMITER //
+mysql> CREATE PROCEDURE display3(x int)
+    -> BEGIN
+    ->
+    ->  select avg(sal)
+    ->  from emp
+    ->  where deptno = x;
+    ->
+    -> END //
+Query OK, 0 rows affected (0.14 sec)
+
+mysql>
+mysql> DELIMITER ;
+mysql>
+mysql> call display3(20);
++-------------+
+| avg(sal)    |
++-------------+
+| 3479.166667 |
++-------------+
+1 row in set (0.00 sec)
+
+Query OK, 0 rows affected (0.01 sec)
+
+
+===================================================================
+
+Q4. Write a procedure to calculate total salary of all employees
+Total sal = sal + comm.
+
+mysql> DELIMITER //
+mysql>
+mysql> CREATE PROCEDURE display4()
+    -> BEGIN
+    ->  select empno,ename,sal,comm,sal+ifnull(comm,0) "TOTAL Salary"
+    ->  from emp;
+    ->
+    -> END //
+Query OK, 0 rows affected (0.13 sec)
+
+mysql> DELIMITER ;
+
+mysql>  call display4();
++-------+--------+----------+---------+--------------+
+| empno | ename  | sal      | comm    | TOTAL Salary |
++-------+--------+----------+---------+--------------+
+|  7369 | SMITH  |   800.00 |    NULL |       800.00 |
+|  7499 | ALLEN  |  1600.00 |  300.00 |      1900.00 |
+|  7521 | WARD   |  1250.00 |  500.00 |      1750.00 |
+|  7566 | JONES  |  2975.00 |    NULL |      2975.00 |
+|  7654 | MARTIN |  1250.00 | 1400.00 |      2650.00 |
+|  7698 | BLAKE  |  2850.00 |    NULL |      2850.00 |
+|  7782 | CLARK  |  2450.00 |    NULL |      2450.00 |
+|  7788 | SCOTT  |  3000.00 |    NULL |      3000.00 |
+|  7839 | KING   |  5000.00 |    NULL |      5000.00 |
+|  7844 | TURNER |  1500.00 |    0.00 |      1500.00 |
+|  7876 | ADAMS  |  1100.00 |    NULL |      1100.00 |
+|  7900 | JAMES  |   950.00 |    NULL |       950.00 |
+|  7902 | FORD   |  3000.00 |    NULL |      3000.00 |
+|  7934 | MILLER |  1300.00 |    NULL |      1300.00 |
+|  1111 | Geeta  | 10000.00 |  300.00 |     10300.00 |
+|  2222 | Raj    |     NULL |    NULL |         NULL |
++-------+--------+----------+---------+--------------+
+16 rows in set (0.00 sec)
+
+===================================================================
+
+Q5. Pass any number to the procedure and check if it is a perfect number. If the number is perfect, procedure should set value of out parameter as 1 otherwise as 0.
+
+mysql> DELIMITER //
+mysql>
+mysql> CREATE PROCEDURE check_perfect(
+    ->     IN num INT,
+    ->     OUT is_perfect TINYINT
+    -> )
+    -> BEGIN
+    ->     DECLARE sum_div INT DEFAULT 0;
+    ->     DECLARE i INT DEFAULT 1;
+    ->
+    ->     -- Loop through all numbers from 1 to num-1
+    ->     WHILE i < num DO
+    ->         IF num % i = 0 THEN
+    ->             SET sum_div = sum_div + i;
+    ->         END IF;
+    ->         SET i = i + 1;
+    ->     END WHILE;
+    ->
+    ->     -- Check if sum of divisors equals the number
+    ->     IF sum_div = num THEN
+    ->         SET is_perfect = 1;
+    ->     ELSE
+    ->         SET is_perfect = 0;
+    ->     END IF;
+    -> END //
+Query OK, 0 rows affected (0.22 sec)
+
+mysql>
+mysql> DELIMITER ;
+mysql> CALL check_perfect(28, @result);
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> SELECT @result;
++---------+
+| @result |
++---------+
+|       1 |
++---------+
+1 row in set (0.00 sec)
+
+===================================================================
+
+Q6. Pass empno as a in parameter to the procedure. If empno is found in the table then, display corresponding salary out of the procedure. If empno is not found in the table then, display 0 out of the parameter.
+
+mysql> DELIMITER //
+mysql>
+mysql> CREATE PROCEDURE get_salary(
+    ->     IN a INT,          -- empno input
+    ->     OUT emp_sal DECIMAL(10,2)  -- salary output
+    -> )
+    -> BEGIN
+    ->     -- Try to get the salary
+    ->     SELECT sal INTO emp_sal
+    ->     FROM emp
+    ->     WHERE empno = a;
+    ->
+    ->     -- If not found, set emp_sal = 0
+    ->     IF emp_sal IS NULL THEN
+    ->         SET emp_sal = 0;
+    ->     END IF;
+    -> END //
+Query OK, 0 rows affected (0.15 sec)
+
+mysql>
+mysql> DELIMITER ;
+mysql> CALL get_salary(7839, @salary);  -- Replace 7839 with any empno
+Query OK, 1 row affected (0.01 sec)
+
+mysql> SELECT @salary;
++---------+
+| @salary |
++---------+
+| 5000.00 |
++---------+
+
+===================================================================
