@@ -1,0 +1,159 @@
+Q1. Copy table emp as empTmp.
+Write the procedure to accept job as in parameter and perform following actions.
+Hike in sal by 5% if employee is manager,
+Hike in sal by 10% if employee is clerk,
+Hike in sal by 7% if employee is analyst,
+otherwise hike by 3%.
+Make necessary changes in empTmp table.
+
+create table emptmp
+as
+select * from emp;
+
+mysql> select * from emptmp;
++-------+--------+-----------+------+------------+----------+---------+--------+
+| EMPNO | ENAME  | JOB       | MGR  | HIREDATE   | SAL      | COMM    | DEPTNO |
++-------+--------+-----------+------+------------+----------+---------+--------+
+|  7369 | SMITH  | CLERK     | 7902 | 1980-12-17 |   800.00 |    NULL |     20 |
+|  7499 | ALLEN  | SALESMAN  | 7698 | 1981-02-20 |  1600.00 |  300.00 |     30 |
+|  7521 | WARD   | SALESMAN  | 7698 | 1981-02-22 |  1250.00 |  500.00 |     30 |
+|  7566 | JONES  | MANAGER   | 7839 | 1981-04-02 |  2975.00 |    NULL |     20 |
+|  7654 | MARTIN | SALESMAN  | 7698 | 1981-09-28 |  1250.00 | 1400.00 |     30 |
+|  7698 | BLAKE  | MANAGER   | 7839 | 1981-05-01 |  2850.00 |    NULL |     30 |
+|  7782 | CLARK  | MANAGER   | 7839 | 1981-09-06 |  2450.00 |    NULL |     10 |
+|  7788 | SCOTT  | ANALYST   | 7566 | 1982-12-09 |  3000.00 |    NULL |     20 |
+|  7839 | KING   | PRESIDENT | NULL | 1981-11-17 |  5000.00 |    NULL |     10 |
+|  7844 | TURNER | SALESMAN  | 7698 | 1981-09-08 |  1500.00 |    0.00 |     30 |
+|  7876 | ADAMS  | CLERK     | 7788 | 1983-01-12 |  1100.00 |    NULL |     20 |
+|  7900 | JAMES  | CLERK     | 7698 | 1981-12-03 |   950.00 |    NULL |     30 |
+|  7902 | FORD   | ANALYST   | 7566 | 1981-12-03 |  3000.00 |    NULL |     20 |
+|  7934 | MILLER | CLERK     | 7782 | 1982-01-23 |  1300.00 |    NULL |     10 |
+|  1111 | Geeta  | NULL      | NULL | NULL       | 10000.00 |  300.00 |     20 |
+|  2222 | Raj    | Analyst   | NULL | NULL       |     NULL |    NULL |     40 |
++-------+--------+-----------+------+------------+----------+---------+--------+
+
+DROP PROCEDURE IF EXISTS emp_hike;
+DELIMITER //
+CREATE PROCEDURE emp_hike(j varchar(15))
+BEGIN
+	IF j = 'manager' THEN
+	select empno,ename,job,sal,comm,deptno,sal+(sal*5/100) "Manager_HIKE"
+	from emptmp
+	WHERE job = 'manager';	
+	
+	ELSEIF j = 'clerk' THEN	
+	select empno,ename,job,sal,comm,deptno,sal+(sal*5/100) "CLERK HIKE"
+	from emptmp
+	WHERE job = 'clerk';
+
+	ELSEIF j = 'analyst' THEN
+	select empno,ename,job,sal,comm,deptno,sal+(sal*7/100) "Analyst HIKE"
+	from emptmp
+	WHERE job = 'analyst';	
+
+	ELSE
+	select empno,ename,job,sal,comm,deptno,sal+(sal*3/100) "All_HIKE"
+	from emptmp
+	WHERE job = j;
+	END IF;
+END;
+
+DELIMITER ;
+
+call emp_hike('manager');
+call emp_hike('clerk');
+call emp_hike('analyst');
+call emp_hike('salesman');
+
+mysql> call emp_hike('manager');
++-------+-------+---------+---------+------+--------+--------------+
+| empno | ename | job     | sal     | comm | deptno | Manager_HIKE |
++-------+-------+---------+---------+------+--------+--------------+
+|  7566 | JONES | MANAGER | 2975.00 | NULL |     20 |  3123.750000 |
+|  7698 | BLAKE | MANAGER | 2850.00 | NULL |     30 |  2992.500000 |
+|  7782 | CLARK | MANAGER | 2450.00 | NULL |     10 |  2572.500000 |
++-------+-------+---------+---------+------+--------+--------------+
+
+mysql> call emp_hike('clerk');
++-------+--------+-------+---------+------+--------+-------------+
+| empno | ename  | job   | sal     | comm | deptno | CLERK HIKE  |
++-------+--------+-------+---------+------+--------+-------------+
+|  7369 | SMITH  | CLERK |  800.00 | NULL |     20 |  840.000000 |
+|  7876 | ADAMS  | CLERK | 1100.00 | NULL |     20 | 1155.000000 |
+|  7900 | JAMES  | CLERK |  950.00 | NULL |     30 |  997.500000 |
+|  7934 | MILLER | CLERK | 1300.00 | NULL |     10 | 1365.000000 |
++-------+--------+-------+---------+------+--------+-------------+
+
+mysql> call emp_hike('analyst');
++-------+-------+---------+---------+------+--------+--------------+
+| empno | ename | job     | sal     | comm | deptno | Analyst HIKE |
++-------+-------+---------+---------+------+--------+--------------+
+|  7788 | SCOTT | ANALYST | 3000.00 | NULL |     20 |  3210.000000 |
+|  7902 | FORD  | ANALYST | 3000.00 | NULL |     20 |  3210.000000 |
+|  2222 | Raj   | Analyst |    NULL | NULL |     40 |         NULL |
++-------+-------+---------+---------+------+--------+--------------+
+
+mysql> call emp_hike('salesman');
++-------+--------+----------+---------+---------+--------+-------------+
+| empno | ename  | job      | sal     | comm    | deptno | All_HIKE    |
++-------+--------+----------+---------+---------+--------+-------------+
+|  7499 | ALLEN  | SALESMAN | 1600.00 |  300.00 |     30 | 1648.000000 |
+|  7521 | WARD   | SALESMAN | 1250.00 |  500.00 |     30 | 1287.500000 |
+|  7654 | MARTIN | SALESMAN | 1250.00 | 1400.00 |     30 | 1287.500000 |
+|  7844 | TURNER | SALESMAN | 1500.00 |    0.00 |     30 | 1545.000000 |
++-------+--------+----------+---------+---------+--------+-------------+
+
+=======================================================================
+
+Q2. Write procedure 'prime' which will check if number passed to the procedure is prime. Procedure should display 1 if prime or 0 if not prime. Use out parameter to display value out of the procedure and in parameter to pass value to the procedure.
+
+DROP PROCEDURE IF EXISTS prime;
+DELIMITER //
+
+CREATE PROCEDURE prime(IN n INT, OUT result INT)
+BEGIN
+    DECLARE i INT DEFAULT 2;
+    DECLARE flag INT DEFAULT 1;
+
+    -- Handle edge cases
+    IF n <= 1 THEN
+        SET flag = 0;
+    ELSE
+        -- Label the loop
+        prime_check: WHILE i <= n / 2 DO
+            IF MOD(n, i) = 0 THEN
+                SET flag = 0;
+                LEAVE prime_check;  -- now LEAVE matches the loop label
+            END IF;
+            SET i = i + 1;
+        END WHILE prime_check;
+    END IF;
+
+    SET result = flag;
+END //
+
+DELIMITER ;
+
+CALL prime(7, @ans);
+SELECT @ans AS IsPrime;
+
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> SELECT @ans AS IsPrime;
++---------+
+| IsPrime |
++---------+
+|       1 |
++---------+
+
+mysql> CALL prime(6, @ans);
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> SELECT @ans AS IsPrime;
++---------+
+| IsPrime |
++---------+
+|       0 |
++---------+
+
+=======================================================================

@@ -1,0 +1,485 @@
+Q1. Write a cursor which will handel all rows having deptno 20.
+
+mysql> DELIMITER //
+mysql>
+mysql> CREATE PROCEDURE handle_dept20()
+    -> BEGIN
+    ->     -- Step 1: Declare variables
+    ->     DECLARE v_empno INT;
+    ->     DECLARE v_ename VARCHAR(50);
+    ->     DECLARE v_sal DECIMAL(10,2);
+    ->     DECLARE done INT DEFAULT 0;
+    ->
+    ->     -- Step 2: Declare cursor
+    ->     DECLARE cur_emp CURSOR FOR
+    ->         SELECT empno, ename, sal
+    ->         FROM emp
+    ->         WHERE deptno = 20;
+    ->
+    ->     -- Step 3: Declare handler
+    ->     DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = 1;
+    ->
+    ->     -- Open cursor
+    ->     OPEN cur_emp;
+    ->
+    ->     read_loop: LOOP
+    ->         FETCH cur_emp INTO v_empno, v_ename, v_sal;
+    ->         IF done = 1 THEN
+    ->             LEAVE read_loop;
+    ->         END IF;
+    ->
+    ->         -- Example action: print employee info
+    ->         SELECT v_empno AS EmpNo, v_ename AS Name, v_sal AS Salary;
+    ->     END LOOP;
+    ->
+    ->     CLOSE cur_emp;
+    -> END //
+Query OK, 0 rows affected (0.10 sec)
+
+mysql>
+mysql> DELIMITER ;
+mysql> CALL handle_dept20();
++-------+-------+--------+
+| EmpNo | Name  | Salary |
++-------+-------+--------+
+|  7369 | SMITH | 800.00 |
++-------+-------+--------+
+1 row in set (0.00 sec)
+
++-------+-------+---------+
+| EmpNo | Name  | Salary  |
++-------+-------+---------+
+|  7566 | JONES | 2975.00 |
++-------+-------+---------+
+1 row in set (0.01 sec)
+
++-------+-------+---------+
+| EmpNo | Name  | Salary  |
++-------+-------+---------+
+|  7788 | SCOTT | 3000.00 |
++-------+-------+---------+
+1 row in set (0.01 sec)
+
++-------+-------+---------+
+| EmpNo | Name  | Salary  |
++-------+-------+---------+
+|  7876 | ADAMS | 1100.00 |
++-------+-------+---------+
+1 row in set (0.01 sec)
+
++-------+------+---------+
+| EmpNo | Name | Salary  |
++-------+------+---------+
+|  7902 | FORD | 3000.00 |
++-------+------+---------+
+1 row in set (0.01 sec)
+
++-------+-------+----------+
+| EmpNo | Name  | Salary   |
++-------+-------+----------+
+|  1111 | Geeta | 10000.00 |
++-------+-------+----------+
+1 row in set (0.01 sec)
+
+Query OK, 0 rows affected (0.01 sec)
+
+=====================================================================
+
+Q2. Write a cursor to increment salary as follows
+Clerk 10% rise
+Manager 5% rise
+Analyst 7% rise.
+No rise given for other jobs.
+
+
+mysql> DELIMITER //
+mysql>
+mysql> CREATE PROCEDURE display_incremented_salary()
+    -> BEGIN
+    ->     -- Step 1: Declare variables
+    ->     DECLARE v_empno INT;
+    ->     DECLARE v_ename VARCHAR(50);
+    ->     DECLARE v_job VARCHAR(15);
+    ->     DECLARE v_sal DECIMAL(10,2);
+    ->     DECLARE done INT DEFAULT 0;
+    ->
+    ->     -- Step 2: Declare cursor
+    ->     DECLARE cur_emp CURSOR FOR
+    ->         SELECT empno, ename, job, sal
+    ->         FROM emp;
+    ->
+    ->     -- Step 3: Declare handler
+    ->     DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = 1;
+    ->
+    ->     -- Step 4: Open cursor
+    ->     OPEN cur_emp;
+    ->
+    ->     read_loop: LOOP
+    ->         FETCH cur_emp INTO v_empno, v_ename, v_job, v_sal;
+    ->         IF done = 1 THEN
+    ->             LEAVE read_loop;
+    ->         END IF;
+    ->
+    ->         -- Step 5: Calculate incremented salary
+    ->         SELECT
+    ->             v_empno AS EmpNo,
+    ->             v_ename AS Name,
+    ->             v_job AS Job,
+    ->             v_sal AS Current_Salary,
+    ->             CASE
+    ->                 WHEN v_job = 'clerk' THEN v_sal * 1.10
+    ->                 WHEN v_job = 'manager' THEN v_sal * 1.05
+    ->                 WHEN v_job = 'analyst' THEN v_sal * 1.07
+    ->                 ELSE v_sal
+    ->             END AS Incremented_Salary;
+    ->     END LOOP;
+    ->
+    ->     -- Step 6: Close cursor
+    ->     CLOSE cur_emp;
+    -> END //
+Query OK, 0 rows affected (0.10 sec)
+
+mysql>
+mysql> DELIMITER ;
+mysql>
+mysql> CALL display_incremented_salary();
++-------+-------+-------+----------------+--------------------+
+| EmpNo | Name  | Job   | Current_Salary | Incremented_Salary |
++-------+-------+-------+----------------+--------------------+
+|  7369 | SMITH | CLERK |         800.00 |           880.0000 |
++-------+-------+-------+----------------+--------------------+
+1 row in set (0.00 sec)
+
++-------+-------+----------+----------------+--------------------+
+| EmpNo | Name  | Job      | Current_Salary | Incremented_Salary |
++-------+-------+----------+----------------+--------------------+
+|  7499 | ALLEN | SALESMAN |        1600.00 |            1600.00 |
++-------+-------+----------+----------------+--------------------+
+1 row in set (0.01 sec)
+
++-------+------+----------+----------------+--------------------+
+| EmpNo | Name | Job      | Current_Salary | Incremented_Salary |
++-------+------+----------+----------------+--------------------+
+|  7521 | WARD | SALESMAN |        1250.00 |            1250.00 |
++-------+------+----------+----------------+--------------------+
+1 row in set (0.01 sec)
+
++-------+-------+---------+----------------+--------------------+
+| EmpNo | Name  | Job     | Current_Salary | Incremented_Salary |
++-------+-------+---------+----------------+--------------------+
+|  7566 | JONES | MANAGER |        2975.00 |          3123.7500 |
++-------+-------+---------+----------------+--------------------+
+1 row in set (0.02 sec)
+
++-------+--------+----------+----------------+--------------------+
+| EmpNo | Name   | Job      | Current_Salary | Incremented_Salary |
++-------+--------+----------+----------------+--------------------+
+|  7654 | MARTIN | SALESMAN |        1250.00 |            1250.00 |
++-------+--------+----------+----------------+--------------------+
+1 row in set (0.02 sec)
+
++-------+-------+---------+----------------+--------------------+
+| EmpNo | Name  | Job     | Current_Salary | Incremented_Salary |
++-------+-------+---------+----------------+--------------------+
+|  7698 | BLAKE | MANAGER |        2850.00 |          2992.5000 |
++-------+-------+---------+----------------+--------------------+
+1 row in set (0.02 sec)
+
++-------+-------+---------+----------------+--------------------+
+| EmpNo | Name  | Job     | Current_Salary | Incremented_Salary |
++-------+-------+---------+----------------+--------------------+
+|  7782 | CLARK | MANAGER |        2450.00 |          2572.5000 |
++-------+-------+---------+----------------+--------------------+
+1 row in set (0.03 sec)
+
++-------+-------+---------+----------------+--------------------+
+| EmpNo | Name  | Job     | Current_Salary | Incremented_Salary |
++-------+-------+---------+----------------+--------------------+
+|  7788 | SCOTT | ANALYST |        3000.00 |          3210.0000 |
++-------+-------+---------+----------------+--------------------+
+1 row in set (0.03 sec)
+
++-------+------+-----------+----------------+--------------------+
+| EmpNo | Name | Job       | Current_Salary | Incremented_Salary |
++-------+------+-----------+----------------+--------------------+
+|  7839 | KING | PRESIDENT |        5000.00 |            5000.00 |
++-------+------+-----------+----------------+--------------------+
+1 row in set (0.03 sec)
+
++-------+--------+----------+----------------+--------------------+
+| EmpNo | Name   | Job      | Current_Salary | Incremented_Salary |
++-------+--------+----------+----------------+--------------------+
+|  7844 | TURNER | SALESMAN |        1500.00 |            1500.00 |
++-------+--------+----------+----------------+--------------------+
+1 row in set (0.04 sec)
+
++-------+-------+-------+----------------+--------------------+
+| EmpNo | Name  | Job   | Current_Salary | Incremented_Salary |
++-------+-------+-------+----------------+--------------------+
+|  7876 | ADAMS | CLERK |        1100.00 |          1210.0000 |
++-------+-------+-------+----------------+--------------------+
+1 row in set (0.04 sec)
+
++-------+-------+-------+----------------+--------------------+
+| EmpNo | Name  | Job   | Current_Salary | Incremented_Salary |
++-------+-------+-------+----------------+--------------------+
+|  7900 | JAMES | CLERK |         950.00 |          1045.0000 |
++-------+-------+-------+----------------+--------------------+
+1 row in set (0.04 sec)
+
++-------+------+---------+----------------+--------------------+
+| EmpNo | Name | Job     | Current_Salary | Incremented_Salary |
++-------+------+---------+----------------+--------------------+
+|  7902 | FORD | ANALYST |        3000.00 |          3210.0000 |
++-------+------+---------+----------------+--------------------+
+1 row in set (0.04 sec)
+
++-------+--------+-------+----------------+--------------------+
+| EmpNo | Name   | Job   | Current_Salary | Incremented_Salary |
++-------+--------+-------+----------------+--------------------+
+|  7934 | MILLER | CLERK |        1300.00 |          1430.0000 |
++-------+--------+-------+----------------+--------------------+
+1 row in set (0.05 sec)
+
++-------+-------+------+----------------+--------------------+
+| EmpNo | Name  | Job  | Current_Salary | Incremented_Salary |
++-------+-------+------+----------------+--------------------+
+|  1111 | Geeta | NULL |       10000.00 |           10000.00 |
++-------+-------+------+----------------+--------------------+
+1 row in set (0.05 sec)
+
++-------+------+---------+----------------+--------------------+
+| EmpNo | Name | Job     | Current_Salary | Incremented_Salary |
++-------+------+---------+----------------+--------------------+
+|  2222 | Raj  | Analyst |           NULL |               NULL |
++-------+------+---------+----------------+--------------------+
+1 row in set (0.06 sec)
+
+Query OK, 0 rows affected (0.06 sec)
+
+=====================================================================
+
+Q3. Pass job as a parameter to procedure and display all employees working for the specified job using cursor.
+
+mysql> CREATE PROCEDURE display_by_job(IN input_job VARCHAR(15))
+    -> BEGIN
+    ->     -- Step 1: Declare variables
+    ->     DECLARE v_empno INT;
+    ->     DECLARE v_ename VARCHAR(50);
+    ->     DECLARE v_job VARCHAR(15);
+    ->     DECLARE v_sal DECIMAL(10,2);
+    ->     DECLARE done INT DEFAULT 0;
+    ->
+    ->     -- Step 2: Declare cursor for the specified job
+    ->     DECLARE cur_emp CURSOR FOR
+    ->         SELECT empno, ename, job, sal
+    ->         FROM emp
+    ->         WHERE job = input_job;
+    ->
+    ->     -- Step 3: Declare handler for end of cursor
+    ->     DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = 1;
+    ->
+    ->     -- Step 4: Open cursor
+    ->     OPEN cur_emp;
+    ->
+    ->     -- Step 5: Loop through rows
+    ->     read_loop: LOOP
+    ->         FETCH cur_emp INTO v_empno, v_ename, v_job, v_sal;
+    ->         IF done = 1 THEN
+    ->             LEAVE read_loop;
+    ->         END IF;
+    ->
+    ->         -- Step 6: Display employee info
+    ->         SELECT
+    ->             v_empno AS EmpNo,
+    ->             v_ename AS Name,
+    ->             v_job AS Job,
+    ->             v_sal AS Salary;
+    ->     END LOOP;
+    ->
+    ->     -- Step 7: Close cursor
+    ->     CLOSE cur_emp;
+    -> END //
+Query OK, 0 rows affected (0.16 sec)
+
+mysql>
+mysql> DELIMITER ;
+mysql>
+mysql> CALL display_by_job('Clerk');
++-------+-------+-------+--------+
+| EmpNo | Name  | Job   | Salary |
++-------+-------+-------+--------+
+|  7369 | SMITH | CLERK | 800.00 |
++-------+-------+-------+--------+
+1 row in set (0.01 sec)
+
++-------+-------+-------+---------+
+| EmpNo | Name  | Job   | Salary  |
++-------+-------+-------+---------+
+|  7876 | ADAMS | CLERK | 1100.00 |
++-------+-------+-------+---------+
+1 row in set (0.02 sec)
+
++-------+-------+-------+--------+
+| EmpNo | Name  | Job   | Salary |
++-------+-------+-------+--------+
+|  7900 | JAMES | CLERK | 950.00 |
++-------+-------+-------+--------+
+1 row in set (0.03 sec)
+
++-------+--------+-------+---------+
+| EmpNo | Name   | Job   | Salary  |
++-------+--------+-------+---------+
+|  7934 | MILLER | CLERK | 1300.00 |
++-------+--------+-------+---------+
+1 row in set (0.04 sec)
+
+Query OK, 0 rows affected (0.04 sec)
+
+mysql> CALL display_by_job('Manager');
++-------+-------+---------+---------+
+| EmpNo | Name  | Job     | Salary  |
++-------+-------+---------+---------+
+|  7566 | JONES | MANAGER | 2975.00 |
++-------+-------+---------+---------+
+1 row in set (0.00 sec)
+
++-------+-------+---------+---------+
+| EmpNo | Name  | Job     | Salary  |
++-------+-------+---------+---------+
+|  7698 | BLAKE | MANAGER | 2850.00 |
++-------+-------+---------+---------+
+1 row in set (0.00 sec)
+
++-------+-------+---------+---------+
+| EmpNo | Name  | Job     | Salary  |
++-------+-------+---------+---------+
+|  7782 | CLARK | MANAGER | 2450.00 |
++-------+-------+---------+---------+
+1 row in set (0.00 sec)
+
+Query OK, 0 rows affected (0.01 sec)
+
+=====================================================================
+
+Q4. Write a cursor to increment salary of all employees by 5% if employee has joined in year 1981.
+
+mysql> DELIMITER //
+mysql>
+mysql> CREATE PROCEDURE display_increment_1981()
+    -> BEGIN
+    ->     -- Step 1: Declare variables
+    ->     DECLARE v_empno INT;
+    ->     DECLARE v_ename VARCHAR(50);
+    ->     DECLARE v_sal DECIMAL(10,2);
+    ->     DECLARE v_hiredate DATE;
+    ->     DECLARE done INT DEFAULT 0;
+    ->
+    ->     -- Step 2: Declare cursor
+    ->     DECLARE cur_emp CURSOR FOR
+    ->         SELECT empno, ename, sal, hiredate
+    ->         FROM emp;
+    ->
+    ->     -- Step 3: Declare handler
+    ->     DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = 1;
+    ->
+    ->     -- Step 4: Open cursor
+    ->     OPEN cur_emp;
+    ->
+    ->     -- Step 5: Loop through rows
+    ->     read_loop: LOOP
+    ->         FETCH cur_emp INTO v_empno, v_ename, v_sal, v_hiredate;
+    ->         IF done = 1 THEN
+    ->             LEAVE read_loop;
+    ->         END IF;
+    ->
+    ->         -- Step 6: Display only employees joined in 1981
+    ->         IF YEAR(v_hiredate) = 1981 THEN
+    ->             SELECT
+    ->                 v_empno AS EmpNo,
+    ->                 v_ename AS Name,
+    ->                 v_hiredate AS HireDate,
+    ->                 v_sal AS Current_Salary,
+    ->                 v_sal * 1.05 AS Incremented_Salary;
+    ->         END IF;
+    ->
+    ->     END LOOP;
+    ->
+    ->     -- Step 7: Close cursor
+    ->     CLOSE cur_emp;
+    -> END //
+Query OK, 0 rows affected (0.09 sec)
+
+mysql>
+mysql> DELIMITER ;
+mysql> CALL display_increment_1981();
++-------+-------+------------+----------------+--------------------+
+| EmpNo | Name  | HireDate   | Current_Salary | Incremented_Salary |
++-------+-------+------------+----------------+--------------------+
+|  7499 | ALLEN | 1981-02-20 |        1600.00 |          1680.0000 |
++-------+-------+------------+----------------+--------------------+
+1 row in set (0.00 sec)
+
++-------+------+------------+----------------+--------------------+
+| EmpNo | Name | HireDate   | Current_Salary | Incremented_Salary |
++-------+------+------------+----------------+--------------------+
+|  7521 | WARD | 1981-02-22 |        1250.00 |          1312.5000 |
++-------+------+------------+----------------+--------------------+
+1 row in set (0.01 sec)
+
++-------+-------+------------+----------------+--------------------+
+| EmpNo | Name  | HireDate   | Current_Salary | Incremented_Salary |
++-------+-------+------------+----------------+--------------------+
+|  7566 | JONES | 1981-04-02 |        2975.00 |          3123.7500 |
++-------+-------+------------+----------------+--------------------+
+1 row in set (0.01 sec)
+
++-------+--------+------------+----------------+--------------------+
+| EmpNo | Name   | HireDate   | Current_Salary | Incremented_Salary |
++-------+--------+------------+----------------+--------------------+
+|  7654 | MARTIN | 1981-09-28 |        1250.00 |          1312.5000 |
++-------+--------+------------+----------------+--------------------+
+1 row in set (0.02 sec)
+
++-------+-------+------------+----------------+--------------------+
+| EmpNo | Name  | HireDate   | Current_Salary | Incremented_Salary |
++-------+-------+------------+----------------+--------------------+
+|  7698 | BLAKE | 1981-05-01 |        2850.00 |          2992.5000 |
++-------+-------+------------+----------------+--------------------+
+1 row in set (0.02 sec)
+
++-------+-------+------------+----------------+--------------------+
+| EmpNo | Name  | HireDate   | Current_Salary | Incremented_Salary |
++-------+-------+------------+----------------+--------------------+
+|  7782 | CLARK | 1981-09-06 |        2450.00 |          2572.5000 |
++-------+-------+------------+----------------+--------------------+
+1 row in set (0.02 sec)
+
++-------+------+------------+----------------+--------------------+
+| EmpNo | Name | HireDate   | Current_Salary | Incremented_Salary |
++-------+------+------------+----------------+--------------------+
+|  7839 | KING | 1981-11-17 |        5000.00 |          5250.0000 |
++-------+------+------------+----------------+--------------------+
+1 row in set (0.03 sec)
+
++-------+--------+------------+----------------+--------------------+
+| EmpNo | Name   | HireDate   | Current_Salary | Incremented_Salary |
++-------+--------+------------+----------------+--------------------+
+|  7844 | TURNER | 1981-09-08 |        1500.00 |          1575.0000 |
++-------+--------+------------+----------------+--------------------+
+1 row in set (0.03 sec)
+
++-------+-------+------------+----------------+--------------------+
+| EmpNo | Name  | HireDate   | Current_Salary | Incremented_Salary |
++-------+-------+------------+----------------+--------------------+
+|  7900 | JAMES | 1981-12-03 |         950.00 |           997.5000 |
++-------+-------+------------+----------------+--------------------+
+1 row in set (0.03 sec)
+
++-------+------+------------+----------------+--------------------+
+| EmpNo | Name | HireDate   | Current_Salary | Incremented_Salary |
++-------+------+------------+----------------+--------------------+
+|  7902 | FORD | 1981-12-03 |        3000.00 |          3150.0000 |
++-------+------+------------+----------------+--------------------+
+
+=====================================================================

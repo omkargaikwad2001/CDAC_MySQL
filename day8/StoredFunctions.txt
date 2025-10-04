@@ -1,0 +1,109 @@
+Q1.Write a function to calculate total salary of an employee. Call the function in select clause.
+total sal = sal+comm
+
+DROP FUNCTION IF EXISTS total_sal;
+
+DELIMITER //
+
+CREATE FUNCTION total_sal(emp_id INT)
+RETURNS DECIMAL(10,2)
+DETERMINISTIC
+BEGIN
+    DECLARE total DECIMAL(10,2);
+
+    SELECT IFNULL(sal,0) + IFNULL(comm,0) INTO total
+    FROM emp
+    WHERE empno = emp_id;
+
+    RETURN total;
+END //
+
+DELIMITER ;
+
+SELECT total_sal(7369) AS "Total Salary";
+
+mysql> SELECT total_sal(7499) AS "Total Salary";
++--------------+
+| Total Salary |
++--------------+
+|      1900.00 |
++--------------+
+
+====================================================================
+
+Q2. Write a function to generate an email. Call the function in select clause. email is generated as follows first 2 ltters of name + last 2 letters of job @knowit.com
+
+mysql> delimiter //
+mysql> create function email(e varchar(15),d int,j varchar(15)) returns varchar(25)
+    -> begin
+    ->    declare p varchar(25);
+    ->    set p=concat(substr(e,1,2),d,substr(j,-3,3),'@knowit.com');
+    ->    return p;
+    -> end //
+Query OK, 0 rows affected (0.12 sec)
+
+mysql> SELECT ename, deptno, job, email(ename, deptno, job) AS email_id
+    -> FROM emp
+    -> WHERE deptno = 30;
++--------+--------+----------+--------------------+
+| ename  | deptno | job      | email_id           |
++--------+--------+----------+--------------------+
+| ALLEN  |     30 | SALESMAN | AL30MAN@knowit.com |
+| WARD   |     30 | SALESMAN | WA30MAN@knowit.com |
+| MARTIN |     30 | SALESMAN | MA30MAN@knowit.com |
+| BLAKE  |     30 | MANAGER  | BL30GER@knowit.com |
+| TURNER |     30 | SALESMAN | TU30MAN@knowit.com |
+| JAMES  |     30 | CLERK    | JA30ERK@knowit.com |
++--------+--------+----------+--------------------+
+
+====================================================================
+
+Q3. Write a function which returns a factorial of a number to the procedure 'Facto'. Print the factorial of a number outside the procedure. Pass number as a in parameter to the procedure. Call function which calls the factorial of a number in the procedure.
+
+mysql> DELIMITER //
+mysql>
+mysql> CREATE FUNCTION factorial(n INT)
+    -> RETURNS BIGINT
+    -> BEGIN
+    ->     DECLARE f BIGINT DEFAULT 1;
+    ->     DECLARE i INT DEFAULT 1;
+    ->
+    ->     WHILE i <= n DO
+    ->         SET f = f * i;
+    ->         SET i = i + 1;
+    ->     END WHILE;
+    ->
+    ->     RETURN f;
+    -> END //
+Query OK, 0 rows affected (0.13 sec)
+
+mysql>
+mysql> DELIMITER ;
+mysql> DROP PROCEDURE IF EXISTS Facto;
+Query OK, 0 rows affected, 1 warning (0.03 sec)
+
+mysql>
+mysql> DELIMITER //
+mysql>
+mysql> CREATE PROCEDURE Facto(IN num INT, OUT result BIGINT)
+    -> BEGIN
+    ->     -- Call the factorial function
+    ->     SET result = factorial(num);
+    -> END //
+Query OK, 0 rows affected (0.13 sec)
+
+mysql>
+mysql> DELIMITER ;
+mysql> CALL Facto(5, @fact_result);
+Query OK, 0 rows affected (0.00 sec)
+
+mysql>
+mysql> SELECT @fact_result AS "Factorial";
++-----------+
+| Factorial |
++-----------+
+|       120 |
++-----------+
+1 row in set (0.00 sec)
+
+====================================================================

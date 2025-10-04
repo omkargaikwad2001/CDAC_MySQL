@@ -1,0 +1,241 @@
+Q1. Consider following tables
+product2(pid,pname,price,qty)
+product_details2(pid,amt)
+amt = product2.price*qty
+Write a trigger which will calculate amt every time any update is done in the price of an item.
+
+create table product2(pid int,pname varchar(15),price double,qty int);
+
+create table product_details2(pid int,amt double);
+
+mysql> DELIMITER //
+mysql>
+mysql> CREATE TRIGGER after_insert_product
+    -> AFTER INSERT
+    -> ON product2
+    -> FOR EACH ROW
+    -> BEGIN
+    ->     DECLARE p DOUBLE;
+    ->
+    ->     -- Calculate amt
+    ->     SET p = NEW.qty * NEW.price;
+    ->
+    ->     -- Insert into product_details2
+    ->     INSERT INTO product_details2 (pid, amt) VALUES (NEW.pid, p);
+    ->
+    -> END;
+    -> //
+Query OK, 0 rows affected (0.09 sec)
+
+mysql>
+mysql> DELIMITER ;
+mysql>
+mysql> INSERT INTO product2 (pid, pname, price, qty) VALUES (1, 'pen', 5, 10);
+Query OK, 1 row affected (0.06 sec)
+
+mysql> INSERT INTO product2 (pid, pname, price, qty) VALUES (2, 'pencil', 2, 20);
+Query OK, 1 row affected (0.06 sec)
+
+mysql> select * from product2;
++------+--------+-------+------+
+| pid  | pname  | price | qty  |
++------+--------+-------+------+
+|    1 | pen    |     5 |   10 |
+|    2 | pencil |     2 |   20 |
++------+--------+-------+------+
+2 rows in set (0.00 sec)
+
+mysql> select * from product_details2;
++------+------+
+| pid  | amt  |
++------+------+
+|    1 |   50 |
+|    2 |   40 |
++------+------+
+2 rows in set (0.00 sec)
+
+================================================================
+
+Q2. Consider following table
+emp_wage(eno,ename,sal,over_time)
+eno:pk auto inc
+Write a trigger which will insert over_time as 400 if value of over_time entered is null.
+
+mysql> CREATE TABLE emp_wage (
+    ->     eno INT PRIMARY KEY AUTO_INCREMENT,
+    ->     ename VARCHAR(15),
+    ->     sal DECIMAL(10,2),
+    ->     over_time INT
+    -> );
+Query OK, 0 rows affected (0.34 sec)
+
+mysql>
+mysql> DELIMITER //
+mysql>
+mysql> CREATE TRIGGER trg_before_insert_emp_wage
+    -> BEFORE INSERT ON emp_wage
+    -> FOR EACH ROW
+    -> BEGIN
+    ->     IF NEW.over_time IS NULL THEN
+    ->         SET NEW.over_time = 400;
+    ->     END IF;
+    -> END;
+    -> //
+Query OK, 0 rows affected (0.08 sec)
+
+mysql>
+mysql> DELIMITER ;
+mysql>
+mysql> INSERT INTO emp_wage(ename, sal) VALUES('John', 5000);
+Query OK, 1 row affected (0.06 sec)
+
+mysql> select * from emp_wage;
++-----+-------+---------+-----------+
+| eno | ename | sal     | over_time |
++-----+-------+---------+-----------+
+|   1 | John  | 5000.00 |       400 |
++-----+-------+---------+-----------+
+1 row in set (0.00 sec)
+
+mysql> INSERT INTO emp_wage(ename, sal) VALUES('Adam', 3000);
+Query OK, 1 row affected (0.10 sec)
+
+mysql> select * from emp_wage;
++-----+-------+---------+-----------+
+| eno | ename | sal     | over_time |
++-----+-------+---------+-----------+
+|   1 | John  | 5000.00 |       400 |
+|   2 | Adam  | 3000.00 |       400 |
++-----+-------+---------+-----------+
+
+================================================================
+
+Q3. Consider following table
+order_master(oid,pname,qty,price)
+oid: pk auto inc
+order_log(oid,odate,amt)
+Write a trigger which will create a log of all orders once order is placed.
+
+create table order_master(oid int primary key auto_increment,pname varchar(15),qty int,price double);
+
+create table order_log(oid int,odate date,amt double);
+
+mysql> DELIMITER //
+mysql>
+mysql> CREATE TRIGGER trg_after_insert_order
+    -> AFTER INSERT ON order_master
+    -> FOR EACH ROW
+    -> BEGIN
+    ->     INSERT INTO order_log(oid, odate, amt)
+    ->     VALUES (NEW.oid, CURDATE(), NEW.qty * NEW.price);
+    -> END;
+    -> //
+Query OK, 0 rows affected (0.24 sec)
+
+mysql>
+mysql> DELIMITER ;
+mysql>
+mysql> INSERT INTO order_master(pname, qty, price) VALUES('Pen', 10, 5.5);
+Query OK, 1 row affected (0.11 sec)
+
+mysql> select * from order_master;
++-----+-------+------+-------+
+| oid | pname | qty  | price |
++-----+-------+------+-------+
+|   1 | Pen   |   10 |   5.5 |
++-----+-------+------+-------+
+1 row in set (0.00 sec)
+
+mysql> select * from order_log;
++------+------------+------+
+| oid  | odate      | amt  |
++------+------------+------+
+|    1 | 2025-10-04 |   55 |
++------+------------+------+
+
+================================================================
+
+Q4. Create a table emp_data(eno pk auto_inc,ename,job,sal)
+Add following data
+('Akshay','Developer',30000)
+('Anika','Analyst',50000)
+('Radhika','Manager',65000)
+Write a trigger to keep log of the data if any updation is done in the salary.
+Keep data in emp_log(eno,ename,job,osal,nsal)
+where osal:is previous salary
+nsal:is updated salary
+
+mysql> CREATE TABLE emp_data (
+    ->     eno INT PRIMARY KEY AUTO_INCREMENT,
+    ->     ename VARCHAR(20),
+    ->     job VARCHAR(20),
+    ->     sal DECIMAL(10,2)
+    -> );
+Query OK, 0 rows affected (0.39 sec)
+
+mysql>
+mysql> CREATE TABLE emp_log (
+    ->     eno INT,
+    ->     ename VARCHAR(20),
+    ->     job VARCHAR(20),
+    ->     osal DECIMAL(10,2),
+    ->     nsal DECIMAL(10,2)
+    -> );
+Query OK, 0 rows affected (0.33 sec)
+
+mysql> INSERT INTO emp_data(ename, job, sal) VALUES
+    -> ('Akshay', 'Developer', 30000),
+    -> ('Anika', 'Analyst', 50000),
+    -> ('Radhika', 'Manager', 65000);
+Query OK, 3 rows affected (0.09 sec)
+Records: 3  Duplicates: 0  Warnings: 0
+
+mysql> DELIMITER //
+mysql>
+mysql> CREATE TRIGGER trg_salary_update
+    -> AFTER UPDATE ON emp_data
+    -> FOR EACH ROW
+    -> BEGIN
+    ->         INSERT INTO emp_log(eno, ename, job, osal, nsal)
+    ->         VALUES (OLD.eno, OLD.ename, OLD.job, OLD.sal, NEW.sal);
+    -> END;
+    -> //
+Query OK, 0 rows affected (0.10 sec)
+
+mysql>
+mysql> DELIMITER ;
+mysql> UPDATE emp_data SET sal = 35000 WHERE ename = 'Akshay';
+Query OK, 1 row affected (0.08 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+mysql> select * from emp_data;
++-----+---------+-----------+----------+
+| eno | ename   | job       | sal      |
++-----+---------+-----------+----------+
+|   1 | Akshay  | Developer | 35000.00 |
+|   2 | Anika   | Analyst   | 50000.00 |
+|   3 | Radhika | Manager   | 65000.00 |
++-----+---------+-----------+----------+
+3 rows in set (0.00 sec)
+
+mysql> select * from emp_log;
++------+--------+-----------+----------+----------+
+| eno  | ename  | job       | osal     | nsal     |
++------+--------+-----------+----------+----------+
+|    1 | Akshay | Developer | 30000.00 | 35000.00 |
++------+--------+-----------+----------+----------+
+
+================================================================
+
+
+
+
+
+
+
+
+
+
+
+
+
