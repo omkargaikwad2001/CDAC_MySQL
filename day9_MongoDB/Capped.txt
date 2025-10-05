@@ -1,0 +1,103 @@
+Q1. Create a capped collection of size 5 by name dept. Store dno,dname,location
+Test this capped collection by adding new documents.
+
+knowit> db.createCollection("dept", {
+...   capped: true,
+...   size: 5000,  
+...   max: 5        
+... })
+...
+{ ok: 1 }
+knowit> show collections
+dept
+movie
+
+knowit> db.dept.insertMany([
+...   { dno: 1, dname: "HR", location: "Mumbai" },
+...   { dno: 2, dname: "IT", location: "Pune" },
+...   { dno: 3, dname: "Sales", location: "Delhi" },
+...   { dno: 4, dname: "Finance", location: "Bangalore" },
+...   { dno: 5, dname: "Marketing", location: "Chennai" }
+... ])
+...
+{
+  acknowledged: true,
+  insertedIds: {
+    '0': ObjectId('68e241899458f96ea8cebea4'),
+    '1': ObjectId('68e241899458f96ea8cebea5'),
+    '2': ObjectId('68e241899458f96ea8cebea6'),
+    '3': ObjectId('68e241899458f96ea8cebea7'),
+    '4': ObjectId('68e241899458f96ea8cebea8')
+  }
+}
+
+knowit> db.dept.find()
+[
+  {
+    _id: ObjectId('68e241899458f96ea8cebea4'),
+    dno: 1,
+    dname: 'HR',
+    location: 'Mumbai'
+  },
+  {
+    _id: ObjectId('68e241899458f96ea8cebea5'),
+    dno: 2,
+    dname: 'IT',
+    location: 'Pune'
+  },
+  {
+    _id: ObjectId('68e241899458f96ea8cebea6'),
+    dno: 3,
+    dname: 'Sales',
+    location: 'Delhi'
+  },
+  {
+    _id: ObjectId('68e241899458f96ea8cebea7'),
+    dno: 4,
+    dname: 'Finance',
+    location: 'Bangalore'
+  },
+  {
+    _id: ObjectId('68e241899458f96ea8cebea8'),
+    dno: 5,
+    dname: 'Marketing',
+    location: 'Chennai'
+  }
+]
+knowit> db.dept.insert({ dno: 6, dname: "Admin", location: "Kolkata" })
+... db.dept.find()
+...
+DeprecationWarning: Collection.insert() is deprecated. Use insertOne, insertMany, or bulkWrite.
+[
+  {
+    _id: ObjectId('68e241899458f96ea8cebea5'),
+    dno: 2,
+    dname: 'IT',
+    location: 'Pune'
+  },
+  {
+    _id: ObjectId('68e241899458f96ea8cebea6'),
+    dno: 3,
+    dname: 'Sales',
+    location: 'Delhi'
+  },
+  {
+    _id: ObjectId('68e241899458f96ea8cebea7'),
+    dno: 4,
+    dname: 'Finance',
+    location: 'Bangalore'
+  },
+  {
+    _id: ObjectId('68e241899458f96ea8cebea8'),
+    dno: 5,
+    dname: 'Marketing',
+    location: 'Chennai'
+  },
+  {
+    _id: ObjectId('68e241f59458f96ea8cebea9'),
+    dno: 6,
+    dname: 'Admin',
+    location: 'Kolkata'
+  }
+]
+
